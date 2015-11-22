@@ -65,6 +65,18 @@ function selectNewOrg() {
 <input type="text" class="form-control" id="longitude" placeholder="Longitude"> \
 </div> \
 \
+<div class="form-group">\
+<label for="sel1">Belongs to set:</label>\
+<select class="form-control" id="sel1">\
+<option >---------</option>\
+<option>Org unit set 1</option>\
+<option>Org unit set 2</option>\
+<option>Org unit set 3</option>\
+<option>Org unit set 4</option>\
+<option>Org unit set 5</option>\
+<option>Org unit set 6</option>\
+</select>\
+</div>\
 <button type="submit" class="btn btn-primary navbar-right">Save</button> \
 </div>';
     $('#panel-body').html(html);
