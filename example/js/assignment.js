@@ -1,5 +1,7 @@
 
+
 $(document).ready(function() {
+    selectSearch();
     initialize_map();
     
 });
@@ -11,13 +13,35 @@ function script() {
 
 function selectSearch() {
 
-    alert("I'm the ad");
+    $('#search-tab').addClass("active");
+    $('#new-tab').removeClass("active");
+    var html = '\
+<div class="form-group">\
+<label for="sel1">Filter results:</label>\
+<select class="form-control" id="sel1">\
+<option >Org unit</option>\
+<option>Org unit Group</option>\
+<option>Org unit Group Set</option>\
+<option>Org unit Level</option>\
+</select>\
+</div>\
+<label class="control-label" for="search">Search:</label>\
+<div class="form-group" id="search">\
+<input type="email" class="form-control" id="email" placeholder="Search for facility">\
+<ul class="list-group">\
+<li class="list-group-item">Search result 1</li>\
+<li class="list-group-item">Search result 2</li>\
+<li class="list-group-item">Search result 3</li>\
+<li class="list-group-item">Search result 4</li>\
+<li class="list-group-item">Search result 5</li>\
+<li class="list-group-item">Search result 6</li>\
+</div>';
+    
+    $('#panel-body').html(html);
 }
 
+function selectNewOrg() {
 
-
-document.getElementById('new-link').onclick = function () {
-    // selectNewOrg():
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     // $('#panel-body').load('file:///test.html');
@@ -41,13 +65,17 @@ document.getElementById('new-link').onclick = function () {
 \
 <button type="submit" class="btn btn-primary navbar-right">Save</button> \
 </div>';
-    
     $('#panel-body').html(html);
+}
+
+
+
+document.getElementById('new-link').onclick = function () {
+    selectNewOrg();
 };
 
 document.getElementById('search-link').onclick = function () {
-    $('#search-tab').addClass("active");
-    $('#new-tab').removeClass("active");
+    selectSearch();
 };
 
 
