@@ -311,13 +311,7 @@ angular.module('myApp.controllers', []).
   }]);
 
 
-// document.getElementById('new-link').onclick = function () {
-//     selectNewOrg();
-// };
-
-// document.getElementById('search-link').onclick = function () {
-//     selectSearch();
-// };
+// This is a huge hack, and it will be changed. Probably using partials in angular
 
 function selectSearch() {
 
