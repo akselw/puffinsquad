@@ -1,3 +1,56 @@
+
+$(document).ready(function() {
+    initialize_map();
+    
+});
+
+function script() {
+    alert("I'm the ad");
+    document.getElementById('panel-body');
+};
+
+function selectSearch() {
+
+    alert("I'm the ad");
+}
+
+
+
+document.getElementById('new-link').onclick = function () {
+    // selectNewOrg():
+    $('#search-tab').removeClass("active");
+    $('#new-tab').addClass("active");
+    // $('#panel-body').load('file:///test.html');
+    var html = '\
+<div class="form-group"> \
+<label class="control-label" for="new-org">New organisational unit:</label> \
+\
+<div class="form-group" id="new-org"> \
+<input type="text" class="form-control" id="name" placeholder="Name"> \
+</div> \
+\
+\
+<div class="form-group" id="new-org"> \
+<input type="text" class="form-control" id="latitude" placeholder="Latitude"> \
+</div> \
+\
+\
+<div class="form-group" id="new-org"> \
+<input type="text" class="form-control" id="longitude" placeholder="Longitude"> \
+</div> \
+\
+<button type="submit" class="btn btn-primary navbar-right">Save</button> \
+</div>';
+    
+    $('#panel-body').html(html);
+};
+
+document.getElementById('search-link').onclick = function () {
+    $('#search-tab').addClass("active");
+    $('#new-tab').removeClass("active");
+};
+
+
 function getStudentData() {
     $.getJSON('/assignment2-gui/api/student', function(json) {
 	populateStudentTable(json);
@@ -30,24 +83,24 @@ function location_found(position) {
 
 var map;
 function initialize_map() {
-        var mapOptions = {
-                zoom : 10,
-                mapTypeId : google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-        // Try HTML5 geolocation
-        if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                        var pos = new google.maps.LatLng(position.coords.latitude,
-                                        position.coords.longitude);
-                        map.setCenter(pos);
-                }, function() {
-                        handleNoGeolocation(true);
-                });
-        } else {
-                // Browser doesn't support Geolocation
-                // Should really tell the user…
-        }
+    var mapOptions = {
+        zoom : 10,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    // Try HTML5 geolocation
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = new google.maps.LatLng(position.coords.latitude,
+                                             position.coords.longitude);
+            map.setCenter(pos);
+        }, function() {
+            handleNoGeolocation(true);
+        });
+    } else {
+        // Browser doesn't support Geolocation
+        // Should really tell the user…
+    }
 }
 
 
