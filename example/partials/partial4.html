@@ -1,0 +1,82 @@
+<!-- Just some static data fore the second milestone of the project -->
+<div ng-init="organizations = [{name:'Nice facility', phone:'22-55-22-55', lat:'30', long:'33'},
+              {name:'Bad facility', phone:'555-22', lat:'25', long:'29'},
+              {name:'Good facility', phone:'100', lat:'33' , long:'34'},
+              {name:'Dirty facility', phone:'5678-22-4000', lat:'28', long:'38'},
+              {name:'Clean facility', phone:'0-8765', lat:'37', long:'37'},
+              {name:'Awkward facility', phone:'555-6666', lat:'35', long:'35'}]"></div>
+
+
+<div class="col-sm-8">
+  <div class="panel panel-default">
+
+
+
+    
+    <div class="panel-heading">Org units
+      <button type="button" class="btn btn-default btn-xs pull-right">
+	<i class="fa fa-location-arrow"> Find me</i>
+      </button>
+    </div>
+
+
+
+    
+    <div class="panel-body">
+      <p>
+	Long: <input type="number" ng-model="location.lng">
+	Lat: <input type="number" ng-model="location.lat">
+      </p>
+      <p>
+	<button ng-click="addMarkers()" type="submit" class="btn btn-success">Add markers</button>
+	<button ng-click="removeMarkers()" type="submit" class="btn btn-success">Remove markers</button>
+	<button ng-click="removeOsmLayer()" type="submit" class="btn btn-success">Show cycle layer</button>
+	<button ng-click="addOsmLayer()" type="submit" class="btn btn-success">Show OSM layer</button>
+	<button ng-click="showGoogleLayers()" type="submit" class="btn btn-success">Show Google layer</button>
+      </p>
+
+      <p>
+	<leaflet defaults="defaults" center="center" markers="markers" layers="layers" height="480px" width="698px"></leaflet>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-sm-4">
+  <div class="panel panel-default"  style="min-height: 643px;">
+    
+    <ul class="nav nav-tabs nav-justified">
+      <li role="presentation" class="active" id="search-tab"><a href="" id="search-link">Search</a></li>
+      <li role="presentation" id="new-tab"><a href="" id="new-link">New</a></li>
+    </ul>
+    <div class="panel-body" id="panel-body">
+
+      <div class="form-group">
+	<label for="sel1">Filter results:</label>
+	<select class="form-control" id="sel1">
+	  <option>Org unit</option>
+	  <option>Org unit Group</option>
+	  <option>Org unit Group Set</option>
+	  <option>Org unit Level</option>
+	</select>
+      </div>
+      
+      <label class="control-label" for="search">Search:</label>
+      <div class="form-group" id="search">
+	<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">
+	<ul class="list-group" id="searchTextResults">
+	  <li class="list-group-item"  ng-repeat="organization in organizations | filter:searchText">
+	    {{organization.name}}
+	  </li>
+	</ul>
+      </div> <!-- form-group -->
+
+
+      
+    </div> <!-- panel-body -->
+  </div> <!-- panel panel-default -->
+</div>  <!-- col-sm-4 -->
+
+
+<script src="js/nav.js"></script>

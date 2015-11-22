@@ -1,137 +1,83 @@
 <!doctype html>
 <html lang="en" ng-app="myApp">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Example DHIS2 App</title>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
     <link rel="shortcut icon" href="../../favicon.ico" />
 
-
-    
-    <!-- For Font Awesome glyphs -->
- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-
-  </head>
-  <script>
+</head>
+<script>
     /* this gets the web api url from the manifest file and makes it available as a Javascript variable */
     var xhReq = new XMLHttpRequest();
     xhReq.open("GET", "manifest.webapp", false);
     xhReq.send(null);
     var serverResponse = JSON.parse(xhReq.responseText);
     var dhisAPI = serverResponse.activities.dhis.href;
-  </script>
-  <body>
+</script>
+<body>
 
-    <!-- Static navbar -->
-    <div class="navbar navbar-default navbar-static-top">
-      <div class="container">
+<!-- Static navbar -->
+<div class="navbar navbar-default navbar-static-top">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse"
-                  data-target=".navbar-collapse">
-            <span class="icon-bar"></span> <span class="icon-bar"></span> <span
-									     class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">Example DHIS2 app</a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target=".navbar-collapse">
+                <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Example DHIS2 app</a>
         </div>
         <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="#/view1">/api/me</a></li>
-            <li><a href="#/view2">System settings</a></li>
-            <li><a href="#/view3">A map</a></li>
-          </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="#/view1">/api/me</a></li>
+                <li><a href="#/view2">System settings</a></li>
+                <li><a href="#/view3">A map</a></li>
+                <li><a href="#/view4">Search organization units</a></li>
+            </ul>
         </div>
         <!--/.nav-collapse -->
-      </div>
     </div>
+</div>
 
-    <div class="container" ng-view></div>
+<div class="container" ng-view></div>
 
-    <div class="container">
-      <div class="col-sm-8">
-	<div class="panel panel-default">
+<div class="container">This app is based on the Angular Seed project and uses AngularJS. </div>
+<div class="container">Authored by Lars Roland @ IFI / University of Oslo as an example of a DHIS2 web app,
+    for use in the INF5750 Open Source development course. </div>
 
-
-
-	  
-	  <div class="panel-heading">Org units
-	    <button type="button" class="btn btn-default btn-xs pull-right">
-	      <i class="fa fa-location-arrow"> Find me</i>
-	    </button>
-	  </div>
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+-->
 
 
 
-	  
-	  <div class="panel-body">
-	    <div id="map-canvas" class="container map"></div>
-	  </div>
-	</div>
-      </div>
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular/angular-route.js"></script>
+<script src="lib/angular/angular-resource.js"></script>
+<script src="js/leaflet.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+<script src="js/angular-leaflet-directive.js"></script>
 
-      
-      <div class="col-sm-4">
-	<div class="panel panel-default"  style="min-height: 573px;">
+<!--<script type="text/javascript" src="http://cdn.jsdelivr.net/lodash/2.1.0/lodash.compat.min.js"></script>-->
+<!--<script type="text/javascript" src="http://cdn.jsdelivr.net/restangular/latest/restangular.js"></script>-->
+<!--<script type="text/javascript" src="js/restangular.js"></script>-->
+<!--<script type="text/javascript" src="js/restangular.min.js"></script>-->
+<script src="js/app.js"></script>
+<script src="js/services.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/controllers/map_controller.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/directives.js"></script>
+<script src="js/directives/draggable_marker_content.js"></script>
 
-	  <ul class="nav nav-tabs nav-justified">
-	    <li role="presentation" class="active" id="search-tab"><a href="" id="search-link">Search</a></li>
-	    <li role="presentation" id="new-tab"><a href="" id="new-link">New</a></li>
-	  </ul>
-	  <div class="panel-body" id="panel-body">
+<script src="js/jquery-1.10.1.min.js"></script>
+<script src="js/jquery-migrate-1.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 
+<script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&amp;sensor=false"></script>
+<script src="js/Google.js"></script>
 
-	    
-<!-- Contents gets set in assignment.js -->
-	  
-
-	  
-	  </div> <!-- panel-body -->
-	</div> <!-- panel panel-default -->
-      </div>  <!-- col-sm-4 -->
-    </div> <!-- Containter -->
-
-
-
-    <!-- In production use:
-	 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	 -->
-
-    <script src="http://v3.modernizr.com/downloads/modernizr-latest.js"></script>
-
-    <script src="lib/angular/angular.js"></script>
-    <script src="lib/angular/angular-route.js"></script>
-    <script src="lib/angular/angular-resource.js"></script>
-    <script src="js/leaflet.js"></script>
-    <script src="js/angular-leaflet-directive.js"></script>
-
-
-    
-    <script type="text/javascript" src="http://cdn.jsdelivr.net/lodash/2.1.0/lodash.compat.min.js"></script>
-    <script type="text/javascript" src="http://cdn.jsdelivr.net/restangular/latest/restangular.js"></script>
-    <script type="text/javascript" src="js/restangular.js"></script>
-    <script type="text/javascript" src="js/restangular.min.js"></script>
-
-    
-    <script src="js/app.js"></script>
-    <script src="js/services.js"></script>
-    <script src="js/controllers.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/directives.js"></script>
-
-    <!-- <script src="js/jquery-1.10.1.min.js"></script> -->
-
-    
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="js/jquery-migrate-1.2.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&amp;sensor=false"></script> -->
-    <!-- <script src="js/Google.js"></script> -->
-
-    
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-
-    <script src="js/assignment.js"></script>
-
-  </body>
+</body>
 </html>
