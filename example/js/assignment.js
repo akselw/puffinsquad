@@ -35,6 +35,8 @@ function selectSearch() {
 <li class="list-group-item">Search result 4</li>\
 <li class="list-group-item">Search result 5</li>\
 <li class="list-group-item">Search result 6</li>\
+<li class="list-group-item">Search result 7</li>\
+<li class="list-group-item">Search result 8</li>\
 </div>';
     
     $('#panel-body').html(html);
@@ -68,7 +70,9 @@ function selectNewOrg() {
     $('#panel-body').html(html);
 }
 
-
+document.getElementById('map-canvas').onclick = function () {
+    selectNewOrg();
+};
 
 document.getElementById('new-link').onclick = function () {
     selectNewOrg();
