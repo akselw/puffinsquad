@@ -2,10 +2,7 @@ angular.module('myApp.controllers', []).
   controller('MapController', ['$scope', '$http', '$compile', function ($scope, $http, $compile) {
 
     $scope.location = {lat: 0.602118, lng: 30.160217};
-    $scope.current_pos = {
-      lat: $scope.location.lat,
-      lng: $scope.location.lng
-    };
+    $scope.current_pos = {}
 
     $scope.center = {
       lat: 0.577400,
@@ -21,6 +18,7 @@ angular.module('myApp.controllers', []).
         lng: $scope.location.lng,
         message: "My Added Marker " + $scope.orgunits[0].name
       });
+
     };
 
     $scope.$on('leafletDirectiveMap.click', function (e, a) {

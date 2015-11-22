@@ -10,7 +10,7 @@
     <button ng-click="addOsmLayer()" type="submit" class="btn btn-success">Show OSM layer</button>
     <button ng-click="showGoogleLayers()" type="submit" class="btn btn-success">Show Google layer</button>
 </p>
-
+<span ng-bind="current_pos.lat"></span>
 <p>{{ location.lat }}</p>
 <p>
     <leaflet defaults="defaults" center="center" geojson="geojson" markers="markers" layers="layers" height="480px" width="800px"></leaflet>
