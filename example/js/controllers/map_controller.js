@@ -21,6 +21,7 @@ angular.module('myApp.controllers', []).
         lng: $scope.location.lng,
         message: "My Added Marker " + $scope.orgunits[0].name
       });
+
     };
 
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
@@ -30,9 +31,14 @@ angular.module('myApp.controllers', []).
       $scope.location.lat = leafEvent.latlng.lat;
 
       $scope.markers.push({
-        lat: leafEvent.latlng.lat,
-        lng: leafEvent.latlng.lng,
-        message: 'My added marker <show-orgunit unit="test"></show-orgunit>'
+        lat: $scope.location.lat,
+        lng: $scope.location.lng,
+        focus: true,
+        message: '<draggable-marker-content></draggable-marker-content>',
+        getMessageScope: function () {
+          return $scope;
+        },
+        draggable: true
       });
     });
     
@@ -60,8 +66,6 @@ angular.module('myApp.controllers', []).
     $scope.initGeojson = function () {
       $http.get('js/json/geo.json').success(function (data) {
         $scope.geojson = data;
-        console.log('Hello');
-
       });
     }
 
@@ -111,8 +115,7 @@ angular.module('myApp.controllers', []).
           lat: coords[1],
           message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
                   $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
-                  dataSets + '<br>' + programs + '<br>' + actions,
-          scrollable: true
+                  dataSets + '<br>' + programs + '<br>' + actions
         });
 
         $scope.center = {
@@ -126,8 +129,6 @@ angular.module('myApp.controllers', []).
     $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
       $scope.orgunit = data;
       $scope.init();
-    }).error(function () {
-      alert('Error');
     });
 
     $http.get('js/json/orgunits.json').success(function (data) {
@@ -135,11 +136,20 @@ angular.module('myApp.controllers', []).
     });
 
 
+    $scope.markerExistsAtPoint = function (lat, lng) {
+      for (var i = 0; i < $scope.markers.length; i++) {
+        var marker = $scope.markers[i];
+        
+        if (marker.lng == lng && marker.lat == lat) 
+          return true;
+      }
+      return false;
+    };
 
     $scope.findOrgunitAndRelocate = function (unitId) {
       $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
         var unit = data;
-        var coords = $.parseJSON(unit.coordinates);
+        var coords = $.parseJSON(unit.coordinates);    
 
         if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
           $scope.geojson = {
@@ -166,6 +176,15 @@ angular.module('myApp.controllers', []).
             }
           };
         } else if (unit.featureType === 'POINT') {
+          if (!$scope.markerExistsAtPoint(coords[0], coords[1])) {
+            $scope.markers.push({
+              lng: coords[0],
+              lat: coords[1],
+              message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
+                      $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
+                      dataSets + '<br>' + programs + '<br>' + actions
+            });
+          }
           $scope.center = {
             lng: coords[0],
             lat: coords[1],
