@@ -205,7 +205,7 @@ angular.module('myApp.controllers', []).
           continuousWorld: true
         }
       };
-    }
+    };
 
     $scope.showGoogleLayers = function() {
       delete this.layers.baselayers.cycle;
