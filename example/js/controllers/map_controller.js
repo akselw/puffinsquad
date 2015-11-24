@@ -255,7 +255,8 @@ angular.module('myApp.controllers', []).
 	  // selectSearch();
 	  
 	  document.getElementById('new-link').onclick = function () {
-	      selectNewOrg();
+	      var html = selectNewOrg();
+	      $compile( document.getElementById('panel-body') )($scope);
 	  };
 
 	  document.getElementById('search-link').onclick = function () {
@@ -355,12 +356,12 @@ function selectNewOrg() {
 \
 \
 <div class="form-group" id="new-org"> \
-<input type="text" class="form-control" id="latitude" placeholder="Latitude"> \
+<input type="number" class="form-control" ng-model="location.lat" placeholder="Latitude"> \
 </div> \
 \
 \
 <div class="form-group" id="new-org"> \
-<input type="text" class="form-control" id="longitude" placeholder="Longitude"> \
+<input type="number" class="form-control"  ng-model="location.lng" placeholder="Longitude"> \
 </div> \
 \
 <div class="form-group">\
