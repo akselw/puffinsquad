@@ -65,16 +65,9 @@
       <div class="form-group" id="search">
 	<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">
 	<ul class="list-group" id="searchTextResults">
-
 	  <li class="list-group-item"  ng-repeat="organisation in orgunits | filter:searchText">
 		
-    {{organisation.name}}
-		<div class="divbutton">
-      <button type="button" style="display: none;"></button>
-    </div>
-      <!-- ng-click="moreInfo()" type="submit"  -->
-      <button class="btn btn-link">More info</button>
-    <button ng-click="showMap()" type="submit" class="btn btn-info">Show on map</button>
+		{{organisation.name}}
 		
 	  </li>
 	</ul>

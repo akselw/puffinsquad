@@ -13,14 +13,6 @@ angular.module('myApp.controllers', []).
       zoom: 4
     };
 
-    $(document).ready(function () {
-                $(document).on('mouseenter', '.divbutton', function () {
-                    $(this).find(":button").show();
-                }).on('mouseleave', '.divbutton', function () {
-                    $(this).find(":button").hide();
-                });
-            });
-
     $scope.markers = new Array();
 
     $scope.addMarkers = function () {
@@ -154,6 +146,15 @@ angular.module('myApp.controllers', []).
       return false;
     };
 
+    $scope.searchOrgUnits = function (unitId) {
+	$http.get('js/json/orgunits.json')success(function(data) { 
+              return data; 
+            }) 
+            .error(function(err) { 
+              return err; 
+            }); 
+	};
+
     $scope.findOrgunitAndRelocate = function (unitId) {
       $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
         var unit = data;
@@ -257,31 +258,6 @@ angular.module('myApp.controllers', []).
         }
       };
     };
-
-    /*($scope.moreInfo() = {
-
-    } // TODO:
-
-    */
-
-    $scope.showMap = function() {
-      
-      $scope.markers.push({
-        lat: $scope.location.lat,
-        lng: $scope.location.lng,
-        //message: "My Added Marker " + $scope.orgunits[0].name
-      });
-    };
-
-    /*
-
-    $scope.location = {lat: 0.602118, lng: 30.160217};
-    $scope.current_pos = {
-      lat: $scope.location.lat,
-      lng: $scope.location.lng
-    };
-
-    */
 
       
       $scope.$on('$viewContentLoaded', function () {
