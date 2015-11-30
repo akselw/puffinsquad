@@ -13,10 +13,16 @@
 <label class="control-label" for="search">Search:</label>
 <div class="form-group" id="search">
   <input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">
-  <ul class="list-group" id="searchTextResults">
-    <li class="list-group-item"  ng-repeat="organization in organizations | filter:searchText">
-      {{organization.name}}
-    </li>
-  </ul>
+
+  
+  <span ng-show="searchText.length > 0">
+    <ul class="list-group" id="searchTextResults">
+      <li class="list-group-item"  ng-repeat="organization in organizations | filter:searchText | orderBy: 'name'">
+	
+	<!-- <a href="#">{{organization.name}}</a> -->
+	<a href="#" style="display:block; min-height:100%;">{{organization.name }}</a>
+      </li>
+    </ul>
+  </span>
 </div> <!-- form-group -->
 
