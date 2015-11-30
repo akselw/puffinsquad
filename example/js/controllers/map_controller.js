@@ -14,7 +14,7 @@ angular.module('myApp.controllers', []).
     };
 
       $scope.markers = new Array();
-      $scope.oldMarkers = $scope.markers;
+      $scope.markersAdded = false;
       $scope.subPage='searchtab';
 
       $scope.addMarkers = function () {
@@ -53,7 +53,10 @@ angular.module('myApp.controllers', []).
 
       $scope.location.lng = leafEvent.latlng.lng;
 	$scope.location.lat = leafEvent.latlng.lat;
-	$scope.markers.pop();
+	if ($scope.markersAdded) {
+	    $scope.markers.pop();
+	}
+	$scope.markersAdded = true;
 
       $scope.markers.push({
         lat: $scope.location.lat,
@@ -79,16 +82,16 @@ angular.module('myApp.controllers', []).
 	
     }
 
-    $scope.markers.push({
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
-      focus: true,
-      message: '<draggable-marker-content></draggable-marker-content>',
-      getMessageScope: function () {
-        return $scope;
-      },
-      draggable: true
-    });
+    // $scope.markers.push({
+    //   lat: $scope.location.lat,
+    //   lng: $scope.location.lng,
+    //   focus: true,
+    //   message: '<draggable-marker-content></draggable-marker-content>',
+    //   getMessageScope: function () {
+    //     return $scope;
+    //   },
+    //   draggable: true
+    // });
 
     $scope.initGeojson = function () {
       $http.get('js/json/geo.json').success(function (data) {
