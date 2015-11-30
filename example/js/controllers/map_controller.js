@@ -14,10 +14,11 @@ angular.module('myApp.controllers', []).
     };
 
       $scope.markers = new Array();
+      $scope.oldMarkers = $scope.markers;
       $scope.subPage='searchtab';
 
-    $scope.addMarkers = function () {
-      $scope.markers.push({
+      $scope.addMarkers = function () {
+	  $scope.markers.push({
         lat: $scope.location.lat,
         lng: $scope.location.lng,
         message: "My Added Marker " + $scope.orgunits[0].name
@@ -28,26 +29,31 @@ angular.module('myApp.controllers', []).
       $scope.selectNewOrg = function () {
 	  $('#search-tab').removeClass("active");
 	  $('#new-tab').addClass("active");
+	  $('#new-tab-link').html('New');
 	  $scope.subPage = 'neworgtab';
       };
 
       $scope.selectSearch = function () {
 	  $('#new-tab').removeClass("active");
 	  $('#search-tab').addClass("active");
+	  $('#new-tab-link').html('New');
 	  $scope.subPage = 'searchtab';
       };
       
-      $scope.selectNewOrg = function () {
+      $scope.selectEditOrg = function () {
 	  $('#search-tab').removeClass("active");
 	  $('#new-tab').addClass("active");
+	  $('#new-tab-link').html('Edit');
 	  $scope.subPage = 'editorgtab';
       };
+
 
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
       var leafEvent = a.leafletEvent;
 
       $scope.location.lng = leafEvent.latlng.lng;
-      $scope.location.lat = leafEvent.latlng.lat;
+	$scope.location.lat = leafEvent.latlng.lat;
+	$scope.markers.pop();
 
       $scope.markers.push({
         lat: $scope.location.lat,
@@ -59,6 +65,7 @@ angular.module('myApp.controllers', []).
         },
         draggable: true
       });
+	$scope.selectNewOrg();
     });
     
     $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
@@ -68,7 +75,8 @@ angular.module('myApp.controllers', []).
     });
 
     $scope.removeMarkers = function () {
-      $scope.markers = new Array();
+	$scope.markers = new Array();
+	
     }
 
     $scope.markers.push({
@@ -122,19 +130,22 @@ angular.module('myApp.controllers', []).
         
         
         if ($scope.orgunit.access.update) 
-          actions += '<button type="button" class="btn btn-block btn-default">Edit</button>';
+            actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
         
         if ($scope.orgunit.access.delete) 
           actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';   
         
-        
+
+	var message = '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
+                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
+            dataSets + '<br>' + programs + '<br>' + actions;
+	  
 
         $scope.markers.push({
           lng: coords[0],
           lat: coords[1],
-          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
-                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
-                  dataSets + '<br>' + programs + '<br>' + actions
+            message: message,
+            getMessageScope: function() {return $scope; },
         });
 
         $scope.center = {
