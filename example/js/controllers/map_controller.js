@@ -11,7 +11,7 @@ angular.module('myApp.controllers', []).
       lat: 0.577400,
       lng: 30.201073,
       zoom: 4
-    };
+    }; 
 
     $(document).ready(function () {
                 $(document).on('mouseenter', '.divbutton', function () {
@@ -32,6 +32,17 @@ angular.module('myApp.controllers', []).
 
     };
 
+    $scope.showOnMap = function () {
+
+      console.log("Finding current position with GeoLocation . . . ");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    };
+
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
       var leafEvent = a.leafletEvent;
 
@@ -49,7 +60,7 @@ angular.module('myApp.controllers', []).
         draggable: true
       });
     });
-    
+
     $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
       console.log(a.leafletEvent.target._latlng.lat);
       $scope.current_pos.lat = a.leafletEvent.target._latlng.lat;
@@ -88,7 +99,7 @@ angular.module('myApp.controllers', []).
 
         for (var i = 0; i < $scope.orgunit.organisationUnitGroups.length; i++) {
           groups += $scope.orgunit.organisationUnitGroups[i].name;
-          
+
           if (i+1 < $scope.orgunit.organisationUnitGroups.length) {
             groups += ', ';
           }
@@ -104,25 +115,25 @@ angular.module('myApp.controllers', []).
 
         dataSets += '</ul>';
         programs += '</ul>';
-        
-        
-        
+
+
+
         var actions = '';
-        
-        
-        if ($scope.orgunit.access.update) 
+
+
+        if ($scope.orgunit.access.update)
           actions += '<button type="button" class="btn btn-block btn-default">Edit</button>';
-        
-        if ($scope.orgunit.access.delete) 
-          actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';   
-        
-        
+
+        if ($scope.orgunit.access.delete)
+          actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
+
+
 
         $scope.markers.push({
           lng: coords[0],
           lat: coords[1],
-          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
-                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
+          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
+                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
                   dataSets + '<br>' + programs + '<br>' + actions
         });
 
@@ -147,17 +158,20 @@ angular.module('myApp.controllers', []).
     $scope.markerExistsAtPoint = function (lat, lng) {
       for (var i = 0; i < $scope.markers.length; i++) {
         var marker = $scope.markers[i];
-        
-        if (marker.lng == lng && marker.lat == lat) 
+
+        if (marker.lng == lng && marker.lat == lat)
           return true;
       }
       return false;
     };
 
     $scope.findOrgunitAndRelocate = function (unitId) {
+      console.log("Heklllo");
       $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
         var unit = data;
-        var coords = $.parseJSON(unit.coordinates);    
+        var coords = $.parseJSON(unit.coordinates);
+
+        console.log(unit.id);
 
         if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
           $scope.geojson = {
@@ -188,8 +202,8 @@ angular.module('myApp.controllers', []).
             $scope.markers.push({
               lng: coords[0],
               lat: coords[1],
-              message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
-                      $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
+              message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
+                      $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
                       dataSets + '<br>' + programs + '<br>' + actions
             });
           }
@@ -264,8 +278,12 @@ angular.module('myApp.controllers', []).
 
     */
 
+    
+
+    
+
     $scope.showMap = function() {
-      
+
       $scope.markers.push({
         lat: $scope.location.lat,
         lng: $scope.location.lng,
@@ -283,20 +301,20 @@ angular.module('myApp.controllers', []).
 
     */
 
-      
-      $scope.$on('$viewContentLoaded', function () {
-	  // selectSearch();
-	  
-	  document.getElementById('new-link').onclick = function () {
-	      selectNewOrg();
-	  };
 
-	  document.getElementById('search-link').onclick = function () {
-	      var html = selectSearch();
-	      $compile( document.getElementById('panel-body') )($scope);
-	      
-	      // $('#panel-body').html();
-	  };
+      $scope.$on('$viewContentLoaded', function () {
+    	  // selectSearch();
+
+    	  document.getElementById('new-link').onclick = function () {
+    	      selectNewOrg();
+    	  };
+
+    	  document.getElementById('search-link').onclick = function () {
+    	      var html = selectSearch();
+    	      $compile( document.getElementById('panel-body') )($scope);
+
+    	      // $('#panel-body').html();
+    	  };
       });
 
 
@@ -412,3 +430,91 @@ function selectNewOrg() {
 </div>';
     $('#panel-body').html(html);
 }
+
+function showPosition(position) {
+
+    console.log("Finding current position on map . . . ");
+    
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+
+
+    console.log(latitude);
+    console.log(longitude);
+
+   // latlon = new google.maps.LatLng(lat, lon)
+   // var marker = new google.maps.Marker({position:latlon,leafletDirectiveMap:leafletDirectiveMap,title:"You are here!"});
+/*
+    var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+    */    
+
+   // leafletDirectiveMarker = new google.maps.Marker({position:latlon,leafletDirectiveMap:leafletDirectiveMap,title:"You are here!"});
+
+
+   /* $scope.location = {latitude, longitude};
+    $scope.current_pos = {
+      latitude: $scope.location.latitude,
+      longitude: $scope.location.longitude
+    };
+
+    $scope.center = {
+      latitude: 50,
+      longitude: 50,
+      zoom: 6
+    }; 
+
+    */
+    //$scope.$on('leafletDirectiveMap.click', function (e, a) {
+
+      
+      //var leafEvent = a.leafletEvent;
+
+
+      /*
+
+      $scope.markers.push({
+        lat: $scope.location.lat,
+        lng: $scope.location.lng,
+        //message: "My Added Marker " + $scope.orgunits[0].name
+      });
+
+      */
+
+      $scope.location.lng = longitude;
+      $scope.location.lat = latitude;
+
+      $scope.markers.push({
+        lng: $scope.location.longitude,
+        lat: $scope.location.latitude
+        
+        
+      });
+
+      angular.extend($scope, {
+      markers: markers 
+       });
+
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            x.innerHTML = "User denied the request for Geolocation."
+            break;
+        case error.POSITION_UNAVAILABLE:
+            x.innerHTML = "Location information is unavailable."
+            break;
+        case error.TIMEOUT:
+            x.innerHTML = "The request to get user location timed out."
+            break;
+        case error.UNKNOWN_ERROR:
+            x.innerHTML = "An unknown error occurred."
+            break;
+    }
+}
+
+

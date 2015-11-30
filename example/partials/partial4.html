@@ -11,16 +11,16 @@
 
 
 
-    
+
     <div class="panel-heading">Org units
-      <button type="button" class="btn btn-default btn-xs pull-right">
+      <button ng-click="showOnMap()" type="button" class="btn btn-default btn-xs pull-right">
 	<i class="fa fa-location-arrow"> Find me</i>
       </button>
     </div>
 
 
 
-    
+
     <div class="panel-body">
       <p>
 	Long: <input type="number" ng-model="location.lng">
@@ -44,7 +44,7 @@
 
 <div class="col-sm-4">
   <div class="panel panel-default"  style="min-height: 643px;">
-    
+
     <ul class="nav nav-tabs nav-justified">
       <li role="presentation" class="active" id="search-tab"><a href="" id="search-link">Search</a></li>
       <li role="presentation" id="new-tab"><a href="" id="new-link">New</a></li>
@@ -60,25 +60,25 @@
 	  <option>Org unit Level</option>
 	</select>
       </div>
-      
+
       <label class="control-label" for="search">Search:</label>
       <div class="form-group" id="search">
 	<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">
 	<ul class="list-group" id="searchTextResults">
 
 	  <li class="list-group-item"  ng-repeat="organisation in orgunits | filter:searchText">
-		
+
     {{organisation.name}}
 		<div class="divbutton">
       <button type="button" style="display: none;"></button>
     </div>
       <!-- ng-click="moreInfo()" type="submit"  -->
       <button class="btn btn-link">More info</button>
-    <button ng-click="showMap()" type="submit" class="btn btn-info">Show on map</button>
-		
+    <button ng-click="showMap()" type="button" class="btn btn-info">Show on map</button>
+
 	  </li>
 	</ul>
-      </div> <!-- form-group 
+      </div> <!-- form-group
 
     </div> <!-- panel-body -->
   </div> <!-- panel panel-default -->
