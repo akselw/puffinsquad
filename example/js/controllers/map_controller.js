@@ -14,7 +14,7 @@ angular.module('myApp.controllers', []).
     };
 
       $scope.markers = new Array();
-      $scope.subPage='page1';
+      $scope.subPage='searchtab';
 
     $scope.addMarkers = function () {
       $scope.markers.push({
@@ -28,13 +28,19 @@ angular.module('myApp.controllers', []).
       $scope.selectNewOrg = function () {
 	  $('#search-tab').removeClass("active");
 	  $('#new-tab').addClass("active");
-	  $scope.subPage = 'page2';
+	  $scope.subPage = 'neworgtab';
       };
 
       $scope.selectSearch = function () {
 	  $('#new-tab').removeClass("active");
 	  $('#search-tab').addClass("active");
-	  $scope.subPage = 'page1';
+	  $scope.subPage = 'searchtab';
+      };
+      
+      $scope.selectNewOrg = function () {
+	  $('#search-tab').removeClass("active");
+	  $('#new-tab').addClass("active");
+	  $scope.subPage = 'editorgtab';
       };
 
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
@@ -207,8 +213,9 @@ angular.module('myApp.controllers', []).
       });
     };
 
-      $scope.pages = { page1: 'partials/partial5.html',
-		       page2: 'partials/partial6.html',};
+      $scope.pages = { searchtab: 'partials/search-tab.html',
+		       neworgtab: 'partials/new-org-tab.html'
+		       editorgtab: 'partials/edit-org-tab.html',};
 
     $scope.removeOsmLayer = function () {
       delete this.layers.baselayers.osm;
