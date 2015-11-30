@@ -214,7 +214,7 @@ angular.module('myApp.controllers', []).
     };
 
       $scope.pages = { searchtab: 'partials/search-tab.html',
-		       neworgtab: 'partials/new-org-tab.html'
+		       neworgtab: 'partials/new-org-tab.html',
 		       editorgtab: 'partials/edit-org-tab.html',};
 
     $scope.removeOsmLayer = function () {
