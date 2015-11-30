@@ -26,14 +26,12 @@ angular.module('myApp.controllers', []).
     };
 
       $scope.selectNewOrg = function () {
-	  console.log("NewOrg");
 	  $('#search-tab').removeClass("active");
 	  $('#new-tab').addClass("active");
 	  $scope.subPage = 'page2';
       };
 
       $scope.selectSearch = function () {
-	  console.log("search");
 	  $('#new-tab').removeClass("active");
 	  $('#search-tab').addClass("active");
 	  $scope.subPage = 'page1';
