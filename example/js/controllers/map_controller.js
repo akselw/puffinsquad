@@ -13,10 +13,13 @@ angular.module('myApp.controllers', []).
       zoom: 4
     };
 
-    $scope.markers = new Array();
+      $scope.markers = new Array();
+      $scope.markersAdded = false;
+      $scope.subPage='searchtab';
+      $scope.edited = null;
 
-    $scope.addMarkers = function () {
-      $scope.markers.push({
+      $scope.addMarkers = function () {
+	  $scope.markers.push({
         lat: $scope.location.lat,
         lng: $scope.location.lng,
         message: "My Added Marker " + $scope.orgunits[0].name
@@ -24,22 +27,51 @@ angular.module('myApp.controllers', []).
 
     };
 
+      $scope.selectNewOrg = function () {
+	  $('#search-tab').removeClass("active");
+	  $('#new-tab').addClass("active");
+	  $('#new-tab-link').html('New');
+	  $scope.subPage = 'neworgtab';
+      };
+
+      $scope.selectSearch = function () {
+	  $('#new-tab').removeClass("active");
+	  $('#search-tab').addClass("active");
+	  $('#new-tab-link').html('New');
+	  $scope.subPage = 'searchtab';
+      };
+      
+      $scope.selectEditOrg = function () {
+	  $scope.edited = $scope.orgunit;
+	  console.log($scope.edited.name);
+	  $('#search-tab').removeClass("active");
+	  $('#new-tab').addClass("active");
+	  $('#new-tab-link').html('Edit');
+	  $scope.subPage = 'editorgtab';
+      };
+
+
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
       var leafEvent = a.leafletEvent;
 
       $scope.location.lng = leafEvent.latlng.lng;
-      $scope.location.lat = leafEvent.latlng.lat;
+	$scope.location.lat = leafEvent.latlng.lat;
+	if ($scope.markersAdded) {
+	    $scope.markers.pop();
+	}
+	$scope.markersAdded = true;
 
       $scope.markers.push({
         lat: $scope.location.lat,
         lng: $scope.location.lng,
         focus: true,
-        message: '<draggable-marker-content></draggable-marker-content>',
+        // message: '<draggable-marker-content></draggable-marker-content>',
         getMessageScope: function () {
           return $scope;
         },
         draggable: true
       });
+	$scope.selectNewOrg();
     });
     
     $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
@@ -49,19 +81,20 @@ angular.module('myApp.controllers', []).
     });
 
     $scope.removeMarkers = function () {
-      $scope.markers = new Array();
+	$scope.markers = new Array();
+	
     }
 
-    $scope.markers.push({
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
-      focus: true,
-      message: '<draggable-marker-content></draggable-marker-content>',
-      getMessageScope: function () {
-        return $scope;
-      },
-      draggable: true
-    });
+    // $scope.markers.push({
+    //   lat: $scope.location.lat,
+    //   lng: $scope.location.lng,
+    //   focus: true,
+    //   message: '<draggable-marker-content></draggable-marker-content>',
+    //   getMessageScope: function () {
+    //     return $scope;
+    //   },
+    //   draggable: true
+    // });
 
     $scope.initGeojson = function () {
       $http.get('js/json/geo.json').success(function (data) {
@@ -103,19 +136,22 @@ angular.module('myApp.controllers', []).
         
         
         if ($scope.orgunit.access.update) 
-          actions += '<button type="button" class="btn btn-block btn-default">Edit</button>';
+            actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
         
         if ($scope.orgunit.access.delete) 
           actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';   
         
-        
+
+	var message = '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
+                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
+            dataSets + '<br>' + programs + '<br>' + actions;
+	  
 
         $scope.markers.push({
           lng: coords[0],
           lat: coords[1],
-          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
-                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
-                  dataSets + '<br>' + programs + '<br>' + actions
+            message: message,
+            getMessageScope: function() {return $scope; },
         });
 
         $scope.center = {
@@ -194,6 +230,10 @@ angular.module('myApp.controllers', []).
       });
     };
 
+      $scope.pages = { searchtab: 'partials/search-tab.html',
+		       neworgtab: 'partials/new-org-tab.html',
+		       editorgtab: 'partials/edit-org-tab.html',};
+
     $scope.removeOsmLayer = function () {
       delete this.layers.baselayers.osm;
       delete this.layers.baselayers.googleTerrain;
@@ -250,24 +290,6 @@ angular.module('myApp.controllers', []).
       };
     };
 
-      
-      $scope.$on('$viewContentLoaded', function () {
-	  // selectSearch();
-	  
-	  document.getElementById('new-link').onclick = function () {
-	      var html = selectNewOrg();
-	      $compile( document.getElementById('panel-body') )($scope);
-	  };
-
-	  document.getElementById('search-link').onclick = function () {
-	      var html = selectSearch();
-	      $compile( document.getElementById('panel-body') )($scope);
-	      
-	      // $('#panel-body').html();
-	  };
-      });
-
-
     angular.extend($scope, {
       layers: {
         baselayers: {
@@ -293,7 +315,7 @@ angular.module('myApp.controllers', []).
           },
           googleTerrain: {
             name: 'Google Terrain',
-            layerType: 'TERRAIN',
+	    layerType: 'TERRAIN',
             type: 'google'
           },
           googleHybrid: {
@@ -310,73 +332,3 @@ angular.module('myApp.controllers', []).
       }
     });
   }]);
-
-
-// This is a huge hack, and it will be changed. Probably using partials in angular
-
-function selectSearch() {
-
-    $('#search-tab').addClass("active");
-    $('#new-tab').removeClass("active");
-    var html = '\
-      <div class="form-group">\
-	<label for="sel1">Filter results:</label>\
-	<select class="form-control" id="sel1">\
-	  <option>Org unit</option>\
-	  <option>Org unit Group</option>\
-	  <option>Org unit Group Set</option>\
-	  <option>Org unit Level</option>\
-	</select>\
-      </div>\
-      <label class="control-label" for="search">Search:</label>\
-      <div class="form-group" id="search">\
-	<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">\
-	<ul class="list-group" id="searchTextResults">\
-	  <li class="list-group-item"  ng-repeat="organization in organizations | filter:searchText">\
-	    {{organization.name}}\
-	  </li>\
-	</ul>\
-</div>';
-    // return html;
-    $('#panel-body').html(html);
-}
-
-function selectNewOrg() {
-
-    $('#search-tab').removeClass("active");
-    $('#new-tab').addClass("active");
-    // $('#panel-body').load('file:///test.html');
-    var html = '\
-<div class="form-group"> \
-<label class="control-label" for="new-org">New organisational unit:</label> \
-\
-<div class="form-group" id="new-org"> \
-<input type="text" class="form-control" id="name" placeholder="Name"> \
-</div> \
-\
-\
-<div class="form-group" id="new-org"> \
-<input type="number" class="form-control" ng-model="location.lat" placeholder="Latitude"> \
-</div> \
-\
-\
-<div class="form-group" id="new-org"> \
-<input type="number" class="form-control"  ng-model="location.lng" placeholder="Longitude"> \
-</div> \
-\
-<div class="form-group">\
-<label for="sel1">Belongs to set:</label>\
-<select class="form-control" id="sel1">\
-<option >---------</option>\
-<option>Org unit set 1</option>\
-<option>Org unit set 2</option>\
-<option>Org unit set 3</option>\
-<option>Org unit set 4</option>\
-<option>Org unit set 5</option>\
-<option>Org unit set 6</option>\
-</select>\
-</div>\
-<button type="submit" class="btn btn-primary navbar-right">Save</button> \
-</div>';
-    $('#panel-body').html(html);
-}

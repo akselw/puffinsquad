@@ -36,47 +36,27 @@
       </p>
 
       <p>
-	<leaflet defaults="defaults" center="center" markers="markers" layers="layers" height="480px" width="698px"></leaflet>
+	<leaflet defaults="defaults" center="center" markers="markers" layers="layers" height="480px" max-width="698px"></leaflet>
       </p>
     </div>
   </div>
 </div>
 
-
 <div class="col-sm-4">
   <div class="panel panel-default"  style="min-height: 643px;">
+
     
     <ul class="nav nav-tabs nav-justified">
-      <li role="presentation" class="active" id="search-tab"><a href="" id="search-link">Search</a></li>
-      <li role="presentation" id="new-tab"><a href="" id="new-link">New</a></li>
+      
+      <li role="presentation" class="active" id="search-tab"><a ng-click="selectSearch()">Search</a></li>
+      <li role="presentation" id="new-tab"><a id="new-tab-link" ng-click="selectNewOrg()">New</a></li>
+      
     </ul>
     <div class="panel-body" id="panel-body">
-
-      <div class="form-group">
-	<label for="sel1">Filter results:</label>
-	<select class="form-control" id="sel1">
-	  <option>Org unit</option>
-	  <option>Org unit Group</option>
-	  <option>Org unit Group Set</option>
-	  <option>Org unit Level</option>
-	</select>
-      </div>
       
-      <label class="control-label" for="search">Search:</label>
-      <div class="form-group" id="search">
-	<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility">
-	<ul class="list-group" id="searchTextResults">
-	  <li class="list-group-item"  ng-repeat="organization in organizations | filter:searchText">
-	    {{organization.name}}
-	  </li>
-	</ul>
-      </div> <!-- form-group -->
+      <ng-include src="pages[subPage]"></ng-include>
 
 
-      
     </div> <!-- panel-body -->
   </div> <!-- panel panel-default -->
-</div>  <!-- col-sm-4 -->
-
-
-<script src="js/nav.js"></script>
+</div>  <!-- col-sm-4 --> 
