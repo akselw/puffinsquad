@@ -1,0 +1,34 @@
+
+<div class="form-group"> 
+  <label class="control-label" for="new-org">Edit organisational unit:</label> 
+
+  <div class="form-group" id="new-org"> 
+    <input type="text" class="form-control" id="name" placeholder="Name" value="{{edited.name}}"> 
+  </div> 
+
+
+  <div class="form-group" id="new-org"> 
+    <input type="number" class="form-control" ng-model="location.lat" placeholder="Latitude"> 
+  </div> 
+
+
+  <div class="form-group" id="new-org"> 
+    <input type="number" class="form-control"  ng-model="location.lng" placeholder="Longitude"> 
+  </div> 
+
+  <div class="form-group">
+    <label for="sel1">Belongs to set:</label>
+    <select class="form-control" id="sel1">
+      <option >---------</option>
+      <option>Org unit set 1</option>
+      <option>Org unit set 2</option>
+      <option>Org unit set 3</option>
+      <option>Org unit set 4</option>
+      <option>Org unit set 5</option>
+      <option>Org unit set 6</option>
+    </select>
+  </div>
+  
+  <button ng-click="selectSearch()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
+  <button type="submit" class="btn btn-primary navbar-right">Save</button> 
+</div>

@@ -1,0 +1,31 @@
+
+
+<div class="form-group">
+  <label for="sel1">Filter results:</label>
+  <select class="form-control" id="sel1">
+    <option>Org unit</option>
+    <option>Org unit Group</option>
+    <option>Org unit Group Set</option>
+    <option>Org unit Level</option>
+  </select>
+</div>
+
+<label class="control-label" for="search">Searchl:</label>
+<div class="form-group" id="search">
+  <input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility" autofocus>
+
+  
+  <span ng-show="searchText.length > 0">
+    <ul class="list-group" id="searchTextResults">
+      <li class="list-group-item"  ng-repeat="organization in filtered = (orgunits | filter:searchText | orderBy: 'name' |limitTo:9)">
+	<a ng-click="showMap()" style="display:block; min-height:100%;">{{organization.name }}</a>
+      </li>
+      
+      <span ng-show="(orgunits | filter:searchText | orderBy: 'name').length - 9 > 0">
+	<li class="list-group-item">{{(orgunits | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+      </span>
+      
+    </ul>
+  </span>
+</div> <!-- form-group -->
+
