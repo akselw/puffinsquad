@@ -16,6 +16,7 @@ angular.module('myApp.controllers', []).
       $scope.markers = new Array();
       $scope.markersAdded = false;
       $scope.subPage='searchtab';
+      $scope.edited = null;
 
       $scope.addMarkers = function () {
 	  $scope.markers.push({
@@ -41,6 +42,8 @@ angular.module('myApp.controllers', []).
       };
       
       $scope.selectEditOrg = function () {
+	  $scope.edited = $scope.orgunit;
+	  console.log($scope.edited.name);
 	  $('#search-tab').removeClass("active");
 	  $('#new-tab').addClass("active");
 	  $('#new-tab-link').html('Edit');
