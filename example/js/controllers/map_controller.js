@@ -37,11 +37,29 @@ angular.module('myApp.controllers', []).
       console.log("Finding current position with GeoLocation . . . ");
 
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        navigator.geolocation.getCurrentPosition($scope.showPosition, showError);
       } else { 
         x.innerHTML = "Geolocation is not supported by this browser.";
       }
     };
+	
+	$scope.showPosition = function (position) {
+
+		console.log("Finding current position on map . . . ");
+    
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+		console.log(latitude);
+		console.log(longitude);
+		
+		$scope.center = {
+		   
+		   lng: longitude,
+		   lat: latitude,
+		   zoom: 10,
+		};
+		
+	}
 
     $scope.$on('leafletDirectiveMap.click', function (e, a) {
       var leafEvent = a.leafletEvent;
@@ -291,31 +309,16 @@ angular.module('myApp.controllers', []).
       });
     };
 
-    /*
+	$scope.$on('$viewContentLoaded', function () {
+			document.getElementById('new-link').onclick = function () {
+			selectNewOrg();
+		};
 
-    $scope.location = {lat: 0.602118, lng: 30.160217};
-    $scope.current_pos = {
-      lat: $scope.location.lat,
-      lng: $scope.location.lng
-    };
-
-    */
-
-
-      $scope.$on('$viewContentLoaded', function () {
-    	  // selectSearch();
-
-    	  document.getElementById('new-link').onclick = function () {
-    	      selectNewOrg();
-    	  };
-
-    	  document.getElementById('search-link').onclick = function () {
-    	      var html = selectSearch();
-    	      $compile( document.getElementById('panel-body') )($scope);
-
-    	      // $('#panel-body').html();
-    	  };
-      });
+		document.getElementById('search-link').onclick = function () {
+			var html = selectSearch();
+			$compile( document.getElementById('panel-body') )($scope);
+		};
+	});
 
 
     angular.extend($scope, {
@@ -431,74 +434,6 @@ function selectNewOrg() {
     $('#panel-body').html(html);
 }
 
-function showPosition(position) {
-
-    console.log("Finding current position on map . . . ");
-    
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-
-
-    console.log(latitude);
-    console.log(longitude);
-
-   // latlon = new google.maps.LatLng(lat, lon)
-   // var marker = new google.maps.Marker({position:latlon,leafletDirectiveMap:leafletDirectiveMap,title:"You are here!"});
-/*
-    var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-
-    */    
-
-   // leafletDirectiveMarker = new google.maps.Marker({position:latlon,leafletDirectiveMap:leafletDirectiveMap,title:"You are here!"});
-
-
-   /* $scope.location = {latitude, longitude};
-    $scope.current_pos = {
-      latitude: $scope.location.latitude,
-      longitude: $scope.location.longitude
-    };
-
-    $scope.center = {
-      latitude: 50,
-      longitude: 50,
-      zoom: 6
-    }; 
-
-    */
-    //$scope.$on('leafletDirectiveMap.click', function (e, a) {
-
-      
-      //var leafEvent = a.leafletEvent;
-
-
-      /*
-
-      $scope.markers.push({
-        lat: $scope.location.lat,
-        lng: $scope.location.lng,
-        //message: "My Added Marker " + $scope.orgunits[0].name
-      });
-
-      */
-
-      $scope.location.lng = longitude;
-      $scope.location.lat = latitude;
-
-      $scope.markers.push({
-        lng: $scope.location.longitude,
-        lat: $scope.location.latitude
-        
-        
-      });
-
-      angular.extend($scope, {
-      markers: markers 
-       });
-
-}
 
 function showError(error) {
     switch(error.code) {
