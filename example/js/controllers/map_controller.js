@@ -62,7 +62,7 @@ angular.module('myApp.controllers', []).
         lat: $scope.location.lat,
         lng: $scope.location.lng,
         focus: true,
-        message: '<draggable-marker-content></draggable-marker-content>',
+        // message: '<draggable-marker-content></draggable-marker-content>',
         getMessageScope: function () {
           return $scope;
         },

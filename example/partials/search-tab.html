@@ -17,9 +17,14 @@
   
   <span ng-show="searchText.length > 0">
     <ul class="list-group" id="searchTextResults">
-      <li class="list-group-item"  ng-repeat="organization in filtered = (organizations | filter:searchText | orderBy: 'name')">
+      <li class="list-group-item"  ng-repeat="organization in filtered = (organizations | filter:searchText | orderBy: 'name' |limitTo:9)">
 	<a href="#" style="display:block; min-height:100%;">{{organization.name }}</a>
       </li>
+      
+      <span ng-show="{{(organizations | filter:searchText | orderBy: 'name').length}} - 9 > 0">
+	<li class="list-group-item">{{(organizations | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+      </span>
+      
     </ul>
   </span>
 </div> <!-- form-group -->

@@ -1,9 +1,9 @@
 
 <div class="form-group"> 
-  <label class="control-label" for="new-org">New organisational unit:</label> 
+  <label class="control-label" for="new-org">Edit organisational unit:</label> 
 
   <div class="form-group" id="new-org"> 
-    <input type="text" class="form-control" id="name" placeholder="Name"> 
+    <input type="text" class="form-control" id="name" placeholder="Name" value="{{orgunit.name}}"> 
   </div> 
 
 
@@ -28,5 +28,7 @@
       <option>Org unit set 6</option>
     </select>
   </div>
+  
+  <button ng-click="selectSearch()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
   <button type="submit" class="btn btn-primary navbar-right">Save</button> 
 </div>
