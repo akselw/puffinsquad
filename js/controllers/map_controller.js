@@ -1,5 +1,6 @@
-angular.module('myApp.controllers', []).
-  controller('MapController', ['$scope', '$http', '$compile', function ($scope, $http, $compile) {
+var myApp = angular.module('myApp.controllers');
+
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', function ($scope, $http, $compile, $filter) {
 
     $scope.location = {lat: 0.602118, lng: 30.160217};
     $scope.current_pos = {
@@ -30,9 +31,9 @@ angular.module('myApp.controllers', []).
 	  $scope.markers.push({
         lat: $scope.location.lat,
         lng: $scope.location.lng,
-        message: "My Added Marker " + $scope.orgunits[0].name
+        message: "My Added Marker " + $scope.orgunits[0].name,
+        type: 'marker'
       });
-
     };
 
       $scope.selectNewOrg = function () {
@@ -97,17 +98,42 @@ angular.module('myApp.controllers', []).
 	}
 	$scope.markersAdded = true;
 
-      $scope.markers.push({
+
+      var t = $scope.markers.filter(function (element, index, array) {
+        return element.type !== 'movable_marker';
+      });
+
+
+      console.log(t);
+
+      angular.extend($scope, {
+        markers: t
+      });
+
+      var marker = {
         lat: $scope.location.lat,
         lng: $scope.location.lng,
         focus: true,
+<<<<<<< HEAD:js/controllers/map_controller.js
         // message: '<draggable-marker-content></draggable-marker-content>',
+=======
+        message: '<draggable-marker-content></draggable-marker-content>',
+        type: 'movable_marker',
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
         getMessageScope: function () {
           return $scope;
         },
         draggable: true
+<<<<<<< HEAD:js/controllers/map_controller.js
       });
 	$scope.selectNewOrg();
+=======
+      };
+
+      $scope.markers.push(marker);
+
+      marker.popupOpen();
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
     });
 
     $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
@@ -121,6 +147,7 @@ angular.module('myApp.controllers', []).
 	
     }
 
+<<<<<<< HEAD:js/controllers/map_controller.js
     // $scope.markers.push({
     //   lat: $scope.location.lat,
     //   lng: $scope.location.lng,
@@ -131,15 +158,47 @@ angular.module('myApp.controllers', []).
     //   },
     //   draggable: true
     // });
+=======
+    $scope.markers.push({
+      lat: $scope.location.lat,
+      lng: $scope.location.lng,
+      focus: true,
+      type: 'movable_marker',
+      message: '<draggable-marker-content></draggable-marker-content>',
+      getMessageScope: function () {
+        return $scope;
+      },
+      draggable: true
+    });
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
 
     $scope.initGeojson = function () {
-      $http.get('js/json/geo.json').success(function (data) {
-        $scope.geojson = data;
+      $http.get('https://play.dhis2.org/demo/api/organisationUnits.geojson?level=2').success(function (data) {
+        angular.extend($scope, {
+          geojson: {
+            data: data,
+            style: {
+              fillColor: 'green',
+              weight: 2,
+              opacity: 1,
+              color: 'white',
+              dashArray: 3,
+              fillOpacity: 0.8
+            }
+          }
+        });
+
+        console.log($scope.geojson);
+
+      }).error(function (data) {
+        console.log('ERROR');
+        console.log(data);
       });
     }
 
+    $scope.initGeojson();
+
     $scope.init = function () {
-      $scope.initGeojson();
 
       if ($scope.orgunit.featureType === 'POINT') {
         var coords = $.parseJSON($scope.orgunit.coordinates);
@@ -169,6 +228,7 @@ angular.module('myApp.controllers', []).
 
 
         var actions = '';
+<<<<<<< HEAD:js/controllers/map_controller.js
         
         
         if ($scope.orgunit.access.update) 
@@ -181,13 +241,30 @@ angular.module('myApp.controllers', []).
 	var message = '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' + 
                   $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' + 
             dataSets + '<br>' + programs + '<br>' + actions;
+=======
+
+
+        if ($scope.orgunit.access.update)
+          actions += '<button type="button" class="btn btn-block btn-default">Edit</button>';
+
+        if ($scope.orgunit.access.delete)
+          actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
+
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
 
 
         $scope.markers.push({
           lng: coords[0],
           lat: coords[1],
+<<<<<<< HEAD:js/controllers/map_controller.js
             message: message,
             getMessageScope: function() {return $scope; },
+=======
+          type: 'marker',
+          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
+                  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
+                  dataSets + '<br>' + programs + '<br>' + actions
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
         });
 
         $scope.center = {
@@ -223,8 +300,11 @@ angular.module('myApp.controllers', []).
       $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
         var unit = data;
         var coords = $.parseJSON(unit.coordinates);
+<<<<<<< HEAD:js/controllers/map_controller.js
 
         console.log(unit.id);
+=======
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
 
         if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
           $scope.geojson = {
@@ -255,6 +335,10 @@ angular.module('myApp.controllers', []).
             $scope.markers.push({
               lng: coords[0],
               lat: coords[1],
+<<<<<<< HEAD:js/controllers/map_controller.js
+=======
+              type: 'marker',
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
               message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
                       $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
                       dataSets + '<br>' + programs + '<br>' + actions
@@ -329,8 +413,36 @@ angular.module('myApp.controllers', []).
       };
     };
 
+<<<<<<< HEAD
+
+      $scope.$on('$viewContentLoaded', function () {
+	  // selectSearch();
+
+=======
       
+<<<<<<< HEAD:js/controllers/map_controller.js
     /*($scope.moreInfo() = {
+=======
+      $scope.$on('$viewContentLoaded', function () {
+	  // selectSearch();
+	  
+>>>>>>> 06f4b7dd7bb23453acfcc83e0d221d6b56ddb888
+	  document.getElementById('new-link').onclick = function () {
+	      selectNewOrg();
+	  };
+
+	  document.getElementById('search-link').onclick = function () {
+	      var html = selectSearch();
+	      $compile( document.getElementById('panel-body') )($scope);
+<<<<<<< HEAD
+
+=======
+	      
+>>>>>>> 06f4b7dd7bb23453acfcc83e0d221d6b56ddb888
+	      // $('#panel-body').html();
+	  };
+      });
+>>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/js/controllers/map_controller.js
 
     } // TODO:
 
