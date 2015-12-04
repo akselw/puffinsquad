@@ -1,5 +1,5 @@
 angular.module('myApp.controllers', []).
-  controller('MapController', ['$scope', '$http', '$compile', function ($scope, $http, $compile) {
+  controller('MapController', ['$scope', '$http', '$compile', '$OrgServices', function ($scope, $http, $compile) {
 
     $scope.location = {lat: 0.602118, lng: 30.160217};
     $scope.current_pos = {
@@ -11,7 +11,20 @@ angular.module('myApp.controllers', []).
       lat: 0.577400,
       lng: 30.201073,
       zoom: 4
-    }; 
+    };
+
+    $scope.orgunits = [];
+      $scope.query = "";
+      
+
+
+
+      $scope.initSearch = function () {
+          
+        $scope.orgunits = getOrganisationUnits();
+
+         
+      };
 
     $(document).ready(function () {
                 $(document).on('mouseenter', '.divbutton', function () {
@@ -59,6 +72,7 @@ angular.module('myApp.controllers', []).
       };
 
     $scope.showOnMap = function () {
+      
 
       console.log("Finding current position with GeoLocation . . . ");
 
@@ -203,7 +217,7 @@ angular.module('myApp.controllers', []).
       $scope.init();
     });
 
-    $http.get('js/json/orgunits.json').success(function (data) {
+    $http.get('http://apps.dhis2.org/demo/api/organisationUnits.json?paging=false').success(function (data) {
       $scope.orgunits = data;
     });
 
@@ -219,7 +233,7 @@ angular.module('myApp.controllers', []).
     };
 
     $scope.findOrgunitAndRelocate = function (unitId) {
-      console.log("Heklllo");
+      
       $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
         var unit = data;
         var coords = $.parseJSON(unit.coordinates);
@@ -334,11 +348,23 @@ angular.module('myApp.controllers', []).
 
     } // TODO:
 
-    */
+    
+	
+	
+    $scope.search = function () {
+		console.log("search in mapcontroller");
+        OrgService.search($scope.query).then(
+          function (data) {
+            $scope.orgs = data;
+			console.log("search in mapcontroller2");
+          }
+        );
+    };
 
+	
     
 
-    
+*/
 
     $scope.showMap = function() {
 
