@@ -15,7 +15,7 @@
 },
     "activities":{
     "dhis":{
-        "href":"*"
+        "href":"https://play.dhis2.org/demo/"
     }
 },
     "launchUrl":null,

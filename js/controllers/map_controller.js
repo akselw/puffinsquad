@@ -1,6 +1,6 @@
 var myApp = angular.module('myApp.controllers');
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', function ($scope, $http, $compile, $filter, OrgunitsGeoService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, OrgunitsGeoService, OrgunitService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
     lat: $scope.location.lat,
@@ -84,7 +84,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   OrgunitsGeoService.get({ level: 4 }, function (data) {
     var features = data.features;
     console.log(features);
-
     features.forEach(function (entry) {
       var geometry = entry.geometry;
 
@@ -102,7 +101,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 	    },
         });
 	
-        $scope.orgUnits[entry.id] = entry;
+        $scope.orgUnits[entry.properties.code] = entry;
 	
     });
       console.log( $scope.orgUnits["ke2gwHKHP3z"]);
@@ -110,6 +109,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
     // console.log();
     // 		    });
+  // });
+
+  OrgunitService.get({ id: 'qjboFI0irVu' }, function (data) {
+    console.log('Hei');
+    console.log(data);
+  });
 
 
 
