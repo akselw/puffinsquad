@@ -1,5 +1,5 @@
 angular.module('myApp.controllers', []).
-  controller('MapController', ['$scope', '$http', '$compile', '$OrgServices', function ($scope, $http, $compile) {
+  controller('MapController', ['$scope', '$http', '$compile', function ($scope, $http, $compile) {
 
     $scope.location = {lat: 0.602118, lng: 30.160217};
     $scope.current_pos = {
@@ -14,6 +14,7 @@ angular.module('myApp.controllers', []).
     };
 
     $scope.orgunits = [];
+    $scope.orgdata = [];
       $scope.query = "";
       
 
@@ -21,7 +22,14 @@ angular.module('myApp.controllers', []).
 
       $scope.initSearch = function () {
           
-        $scope.orgunits = getOrganisationUnits();
+        $http({
+            method: "GET",
+            url: "http://apps.dhis2.org/demo/api/organisationUnits.json?paging=false",
+            headers: { "Authorization": "Basic YWRtaW46ZGlzdHJpY3Q=" }
+
+          }).success(function (data) {
+            $scope.orgunits = data;
+          });
 
          
       };
@@ -213,11 +221,12 @@ angular.module('myApp.controllers', []).
     };
 
     $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
+      $scope.orgdata = data;
       $scope.orgunit = data;
       $scope.init();
     });
 
-    $http.get('http://apps.dhis2.org/demo/api/organisationUnits.json?paging=false').success(function (data) {
+    $http.get('js/json/orgunits.json').success(function (data) {
       $scope.orgunits = data;
     });
 
@@ -361,16 +370,34 @@ angular.module('myApp.controllers', []).
         );
     };
 
-	
+	console.log("Finding current position on map . . . ");
+    
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    console.log(latitude);
+    console.log(longitude);
+    
+    $scope.center = {
+       
+       lng: longitude,
+       lat: latitude,
+       zoom: 10,
+    };
     
 
 */
 
-    $scope.showMap = function() {
+    $scope.showMap = function(orgname) {
+
+      console.log(orgname);
+
+      coordinates = getLocation(orgname, $scope.orgdata);
+
+      console.log(coordinates);
 
       $scope.markers.push({
-        lat: $scope.location.lat,
-        lng: $scope.location.lng,
+        lat: coordinates[0],
+        lng: coordinates[1],
         //message: "My Added Marker " + $scope.orgunits[0].name
       });
     };
@@ -434,3 +461,29 @@ function showError(error) {
             break;
     }
 }
+
+function getLocation(orgname, orgdata) {
+  
+  var coordinates = [];
+
+  angular.forEach(orgdata, function(item) {
+
+    console.log(item.coordinates[0] + "for eeeeeeeeeeeeeeech looooooooop");
+
+    // if one of the organisations in the API equals the organisation id
+    if (item.id === orgname.id) {
+      
+      coordinates = item.coordinates;
+
+    } 
+
+  });
+
+  
+
+  return  {
+    coordinates
+  };
+}
+
+
