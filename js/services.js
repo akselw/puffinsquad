@@ -40,6 +40,7 @@ myAppServices.factory("ProfileService", function ($resource) {
 myAppServices.factory('OrgunitsGeoService', function ($resource) {
   var level = 1;
 
+<<<<<<< HEAD
   return {
     byLevel: function (level) {
       return $resource(
@@ -49,6 +50,13 @@ myAppServices.factory('OrgunitsGeoService', function ($resource) {
         },
         { }
       );
+=======
+  return $resource(
+    '/js/json/geo.json',
+   // dhisAPI + 'api/organisationUnits.geojson?level=:level',
+    {
+      level: level
+>>>>>>> 798333773ba5a27d1dd81b14e8487a9d1f53eb7a
     },
     withParent: function (parent, levels) {
       var levels = '';
