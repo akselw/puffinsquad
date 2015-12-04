@@ -5,7 +5,7 @@
     <title>DHIS2 Organisation Units App</title>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
-    <link rel="stylesheet" href="css/app.css" />
+    <!-- <link rel="stylesheet" href="css/app.css" /> -->
     <link rel="shortcut icon" href="../../favicon.ico" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css" />
@@ -19,19 +19,19 @@
     var serverResponse = JSON.parse(xhReq.responseText);
     var dhisAPI = serverResponse.activities.dhis.href;
 </script>
-<body style="padding-top: 80px;">
+<!-- <body style="padding-top: 80px;"> -->
 
 
-  <div class="search-bar">
-    <div class="ui fluid category search">
-  <div class="ui icon input">
-    <input class="prompt" type="text" placeholder="Search organistion units...">
-    <i class="search icon"></i>
-  </div>
-  <div class="results"></div>
-</div>
-  </div>
-<!---
+<!--   <div class="search-bar"> -->
+<!--     <div class="ui fluid category search"> -->
+<!--   <div class="ui icon input"> -->
+<!--     <input class="prompt" type="text" placeholder="Search organistion units..."> -->
+<!--     <i class="search icon"></i> -->
+<!--   </div> -->
+<!--   <div class="results"></div> -->
+<!-- </div> -->
+<!--   </div> -->
+
 <div class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">
@@ -50,8 +50,7 @@
         </div>
     </div>
 </div>
--->
-<div ng-view></div>
+<div class="container" ng-view></div>
 
 <div class="container">This app is based on the Angular Seed project and uses AngularJS. </div>
 <div class="container">Click on "Search organization units to find an organization.</div>
