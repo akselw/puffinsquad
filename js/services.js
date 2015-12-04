@@ -41,7 +41,7 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
   var level = 1;
 
   return $resource(
-    'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
+    dhisAPI + 'api/organisationUnits.geojson?level=:level',
     {
       level: level
     },
@@ -49,6 +49,19 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
       setLevel: function (l) {
         level = l;
       }
+    }
+  );
+});
+
+myAppServices.factory("OrgunitService", function ($resource, $http) {
+  var unitId = '';
+  return $resource(
+    dhisAPI + 'api/organisationUnits/:id.json',
+    {
+      id: unitId
+    },
+    {
+
     }
   );
 });
