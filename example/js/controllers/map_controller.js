@@ -13,12 +13,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     zoom: 4
   };
 
-  $scope.orgunits = [];
-  $scope.orgdata = [];
-  $scope.query = "";
-
   $scope.geojson = new Array();
   $scope.markers = new Array();
+
+  $scope.orgUnits = new Array();
 
   $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
     console.log('Loaded geojson data GET');
@@ -33,22 +31,85 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     };
   });
 
+    $scope.markerMessage = function(entry) {
+      // 	var groups = '';
+      // var dataSets = '<h5>Data sets</h5><ul>';
+      // var programs = '<h5>Programs</h5><ul>';
+
+      // for (var i = 0; i < $scope.orgunit.organisationUnitGroups.length; i++) {
+      //   groups += $scope.orgunit.organisationUnitGroups[i].name;
+
+      //   if (i+1 < $scope.orgunit.organisationUnitGroups.length) {
+      //     groups += ', ';
+      //   }
+      // }
+
+      // for (var i = 0; i < $scope.orgunit.dataSets.length; i++) {
+      //   dataSets += '<li>' + $scope.orgunit.dataSets[i].name + '</li>';
+      // }
+
+      // for (var i = 0; i < $scope.orgunit.programs.length; i++) {
+      //   programs += '<li>' + $scope.orgunit.programs[i].name + '</li>';
+      // }
+
+      // dataSets += '</ul>';
+      // programs += '</ul>';
+
+
+
+      // var actions = '';
+
+
+      // if ($scope.orgunit.access.update)
+      // actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
+
+      // if ($scope.orgunit.access.delete)
+      // actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
+
+
+      // var message = '<h4>' + entry.properties.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
+      // $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
+      // 	  dataSets + '<br>' + programs + '<br>' + actions;
+
+	var actions = "";
+	
+    actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
+	
+	var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
+	
+	return message;
+    }
+
 
   OrgunitsGeoService.get({ level: 4 }, function (data) {
     var features = data.features;
-
+    console.log(features);
     features.forEach(function (entry) {
       var geometry = entry.geometry;
 
-      if (geometry.type === 'Point')
+	if (geometry.type === 'Point')
+	    
         $scope.markers.push({
           lat: geometry.coordinates[1],
           lng: geometry.coordinates[0],
           type: 'marker',
-          id: entry.id
+            id: entry.id,
+	    
+	    message: $scope.markerMessage(entry),
+	    getMessageScope: function () {
+		return $scope;
+	    },
         });
+	
+        $scope.orgUnits[entry.properties.code] = entry;
+	
     });
+      console.log( $scope.orgUnits["ke2gwHKHP3z"]);
   });
+
+    // console.log();
+    // 		    });
+  // });
 
   OrgunitService.get({ id: 'qjboFI0irVu' }, function (data) {
     console.log('Hei');
@@ -250,16 +311,17 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       };
     }
   };
+  /*
 
   $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
-      $scope.orgdata = data;
-      $scope.orgunit = data;
-      $scope.init();
-    });
+    $scope.orgunit = data;
+    $scope.init();
+  });
 
-    $http.get('js/json/orgunits.json').success(function (data) {
-      $scope.orgunits = data;
-    });
+  $http.get('js/json/orgunits.json').success(function (data) {
+    $scope.orgunits = data;
+  });
+*/
 
   $scope.markerExistsAtPoint = function (lat, lng) {
     for (var i = 0; i < $scope.markers.length; i++) {
@@ -386,24 +448,22 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $scope.showMap = function(organization_data) {
 
     /*
-
     TODO: the other way to get out organization data.
-
     OrgunitService.get({ id: organization_data.id }, function (data) {
-       
-    });
-
-      
+    
     */
-
       coordinates = getLocation(organization_data, $scope.orgdata);
+
+      var message = '<h4>' + organization_data.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">';
 
       console.log(organization_data.id);
 
       $scope.markers.push({
         lat: coordinates[0],
         lng: coordinates[1],
-        
+        message: message,
+        getMessageScope: function() {return $scope; },
+        type: 'marker',
       });
     };
 
@@ -467,7 +527,7 @@ function showError(error) {
   }
 }
 
-function getLocation(orgname, orgdata) {
+function getLocation(orgname, orgUnits) {
   
   var coordinates = [];
 
