@@ -33,3 +33,37 @@
     height: 100px;
     background: #0000ff;
 }
+
+.angular-leaflet-map {
+  width: 100%;
+  height: auto;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 80px;
+  bottom: 0;
+}
+
+
+
+.search-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: #ddd;
+  box-shadow: 0 0 4px rgba(0, 0, 0, .3);
+  line-height: 80px;
+  padding: 0 30px;
+
+}
+
+.search-bar .search .input {
+  width: 100%;
+}
+
+.search-bar .search .input input {
+  width: 100%;
+  border-radius: 4px;
+}

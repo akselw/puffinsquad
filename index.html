@@ -2,15 +2,13 @@
 <html lang="en" ng-app="myApp">
 <head>
     <meta charset="utf-8">
-    <title>Example DHIS2 App</title>
+    <title>DHIS2 Organisation Units App</title>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
+    <link rel="stylesheet" href="css/app.css" />
     <link rel="shortcut icon" href="../../favicon.ico" />
-<<<<<<< HEAD:index.html
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-=======
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css" />
->>>>>>> 7a2a66ba6aa9d4e566eb5f0b334c00353b7cdb37:example/index.html
 
 </head>
 <script>
@@ -21,9 +19,19 @@
     var serverResponse = JSON.parse(xhReq.responseText);
     var dhisAPI = serverResponse.activities.dhis.href;
 </script>
-<body>
+<body style="padding-top: 80px;">
 
-<!-- Static navbar -->
+
+  <div class="search-bar">
+    <div class="ui fluid category search">
+  <div class="ui icon input">
+    <input class="prompt" type="text" placeholder="Search organistion units...">
+    <i class="search icon"></i>
+  </div>
+  <div class="results"></div>
+</div>
+  </div>
+<!---
 <div class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">
@@ -36,20 +44,14 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <!--
-                <li><a href="#/view1">/api/me</a></li>
-                <li><a href="#/view2">System settings</a></li>
-                removed unused tabs in the navbar.
-            -->
                 <li><a href="#/view3">A map</a></li>
                 <li><a href="#/view4">Search organization units</a></li>
             </ul>
         </div>
-        <!--/.nav-collapse -->
     </div>
 </div>
-
-<div class="container" ng-view></div>
+-->
+<div ng-view></div>
 
 <div class="container">This app is based on the Angular Seed project and uses AngularJS. </div>
 <div class="container">Click on "Search organization units to find an organization.</div>
@@ -73,10 +75,13 @@
 <!--<script type="text/javascript" src="js/restangular.min.js"></script>-->
 <script src="js/app.js"></script>
 <script src="js/services.js"></script>
-<script src="js/controllers.js"></script>
+
+
 <script src="js/controllers/controllers.js"></script>
 <script src="js/controllers/map_controller.js"></script>
-<script src="js/controllers/auth_controller.js"></script>
+<script src="js/controllers/search_controller.js"></script>
+
+
 <script src="js/filters.js"></script>
 <script src="js/directives.js"></script>
 <script src="js/directives/draggable_marker_content.js"></script>

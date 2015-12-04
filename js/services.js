@@ -11,7 +11,7 @@ var myAppServices = angular.module('myApp.services', ['ngResource']);
 
 myAppServices.factory("MeService", function ($resource) {
     return $resource(
-        dhisAPI+'/api/me',
+        'play.dhis2.org/demo/api/me',
         {
             // If you're passing variables, for example into the URL
             // they would be here and then as :varName in the URL
@@ -35,6 +35,22 @@ myAppServices.factory("ProfileService", function ($resource) {
             // put them here.
         }
     );
+});
+
+myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
+  var level = 1;
+
+  return $resource(
+    'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
+    {
+      level: level
+    },
+    {
+      setLevel: function (l) {
+        level = l;
+      }
+    }
+  );
 });
 
 
