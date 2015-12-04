@@ -17,7 +17,7 @@
     xhReq.open("GET", "manifest.webapp", false);
     xhReq.send(null);
     var serverResponse = JSON.parse(xhReq.responseText);
-    var dhisAPI = serverResponse.activities.dhis.href;
+    var dhisAPI = serverResponse.activities.dhis.href + '/api/';
 </script>
 <body style="padding-top: 80px;">
 
@@ -65,6 +65,14 @@
 <script src="lib/angular/angular.js"></script>
 <script src="lib/angular/angular-route.js"></script>
 <script src="lib/angular/angular-resource.js"></script>
+
+<script src="node_modules/angular-cookies/angular-cookies.min.js"></script>
+<script src="node_modules/angular-oauth2/dist/angular-oauth2.min.js"></script>
+
+
+<script src="bower_components/angular-base64-codec/dist/angular-base64-codec.min.js"></script>
+<script src="bower_components/angular-basic-auth/dist/angular-basic-auth.min.js"></script>
+
 <script src="js/leaflet.js"></script>
 <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
 <script src="js/angular-leaflet-directive.js"></script>
@@ -85,6 +93,7 @@
 <script src="js/filters.js"></script>
 <script src="js/directives.js"></script>
 <script src="js/directives/draggable_marker_content.js"></script>
+<script src="js/directives/orgunit_marker_msg.js"></script>
 
 
 <script src="js/jquery-1.10.1.min.js"></script>

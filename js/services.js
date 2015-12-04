@@ -37,32 +37,52 @@ myAppServices.factory("ProfileService", function ($resource) {
     );
 });
 
-myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
+myAppServices.factory('OrgunitsGeoService', function ($resource) {
   var level = 1;
 
-  return $resource(
-    dhisAPI + 'api/organisationUnits.geojson?level=:level',
-    {
-      level: level
+  return {
+    byLevel: function (level) {
+      return $resource(
+        'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
+        {
+          level: level
+        },
+        { }
+      );
     },
-    {
-      setLevel: function (l) {
-        level = l;
+    withParent: function (parent, levels) {
+      var levels = '';
+
+      for (var i = 0; i < levels.length; i++) {
+        levels += 'level=' + levels[i];
+
+        if (i+1 < levels.length)
+          levels += '&';
       }
+
+      var ending = levels += '&parent=' + parent;
+
+      return $resource(
+        'https://play.dhis2.org/demo/api/organisationUnits.geojson?' + ending,
+        {
+
+        },
+        {
+
+        }
+      );
     }
-  );
+  };
 });
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
   var unitId = '';
   return $resource(
-    dhisAPI + 'api/organisationUnits/:id.json',
+    dhisAPI + 'organisationUnits/:id.json',
     {
       id: unitId
     },
-    {
-
-    }
+    { }
   );
 });
 

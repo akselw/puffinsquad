@@ -1,11 +1,15 @@
 var myApp = angular.module('myApp.controllers');
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, OrgunitsGeoService, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$cacheFactory', 'OrgunitsGeoService', 'OrgunitService', 'basicAuthService',
+function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, OrgunitService, basicAuthService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
     lat: $scope.location.lat,
     lng: $scope.location.lng
   };
+
+  $scope.cache = $cacheFactory('orgunitCache');
+  $scope.current_unit = {};
 
   $scope.center = {
     lat: 0.577400,
@@ -13,12 +17,53 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     zoom: 4
   };
 
-  $scope.geojson = new Array();
+  $scope.authenticate = function () {
+    basicAuthService.generateAuthorizationHeader('admin', 'district');
+  }
+
+  $scope.testLogin = function () {
+    console.log('Hello World');
+    var userData = { username: 'admin', password: 'district' };
+
+    var successCB = function (response) {
+      console.log('Success! ' + response);
+    };
+
+    var errorCB = function (error) {
+      console.log('Error :(  ');
+      console.log(error);
+    }
+
+    // basicAuthService.generateAuthorizationHeader('admin', 'district');
+    basicAuthService.login('https://play.dhis2.org/', userData, successCB, errorCB);
+
+    OrgunitsGeoService.get({ level: 4 }, function (data) {
+      var features = data.features;
+
+      features.forEach(function (entry) {
+        var geometry = entry.geometry;
+
+        $scope.current_unit = $scope.isCached(entry.id) ? $scope.getOrgunit(entry.id) : OrgunitService.get({ id: entry.id }, function (data) {
+          console.log('GET');
+        });
+
+        if (geometry.type === 'Point')
+          $scope.markers.push({
+            lat: geometry.coordinates[1],
+            lng: geometry.coordinates[0],
+            type: 'marker',
+            id: entry.id,
+            message: '<orgunitMarkerMsg></orgunitMarkerMsg>'
+          });
+      });
+    });
+  }
+
+  $scope.geojson = {};
   $scope.markers = new Array();
 
-  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
-    console.log('Loaded geojson data GET');
-    console.log(data);
+  $scope.geojson.data = OrgunitsGeoService.byLevel(2, function () {
+
     $scope.geojson.style = {
       fillColor: 'green',
       weight: 2,
@@ -27,30 +72,42 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       dashArray: 3,
       fillOpacity: 0.8
     };
+
+
+    console.log($scope.geojson);
   });
 
 
-  OrgunitsGeoService.get({ level: 4 }, function (data) {
+  OrgunitsGeoService.byLevel(2, function (data) {
     var features = data.features;
 
     features.forEach(function (entry) {
       var geometry = entry.geometry;
+
+      $scope.current_unit = $scope.isCached(entry.id) ? $scope.getOrgunit(entry.id) : OrgunitService.get({ id: entry.id }, function (data) {
+        console.log('GET');
+      });
 
       if (geometry.type === 'Point')
         $scope.markers.push({
           lat: geometry.coordinates[1],
           lng: geometry.coordinates[0],
           type: 'marker',
-          id: entry.id
+          id: entry.id,
+          message: '<orgunitMarkerMsg></orgunitMarkerMsg>'
         });
     });
   });
 
-  OrgunitService.get({ id: 'qjboFI0irVu' }, function (data) {
-    console.log('Hei');
-    console.log(data);
-  });
 
+
+  $scope.isCached = function (key) {
+    return $scope.cache.get(key);
+  }
+
+  $scope.getOrgunit = function (id) {
+    return $scope.cache.get(id);
+  }
 
 
   $(document).ready(function () {
@@ -128,7 +185,19 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $scope.$on('leafletDirectiveGeoJson.click', function (e, a) {
     console.log('Hello geo');
     console.log(a);
+
+    console.log(a.model.id);
   });
+
+  $scope.excludeMarkersOfType = function (type) {
+    var new_markers = $scope.markers.filter(function (element, index, array) {
+      return element.type !== type;
+    });
+
+    angular.extend($scope, {
+      markers: new_markers
+    });
+  };
 
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
     var leafEvent = a.leafletEvent;
@@ -140,14 +209,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     }
     $scope.markersAdded = true;
 
-
-    var t = $scope.markers.filter(function (element, index, array) {
-      return element.type !== 'movable_marker';
-    });
-
-    angular.extend($scope, {
-      markers: t
-    });
+    $scope.excludeMarkersOfType('movable_marker');
 
     var marker = {
       lat: $scope.location.lat,
@@ -163,14 +225,16 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $scope.selectNewOrg();
 
     $scope.markers.push(marker);
-
-    marker.popupOpen();
   });
 
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
     console.log(a.leafletEvent.target._latlng.lat);
     $scope.current_pos.lat = a.leafletEvent.target._latlng.lat;
     $scope.current_pos.lng = a.leafletEvent.target._latlng.lng;
+  });
+
+  $scope.$on('leafletDirectiveMarker.click', function (e, a) {
+
   });
 
   $scope.removeMarkers = function () {
