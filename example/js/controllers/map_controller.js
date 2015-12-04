@@ -449,14 +449,33 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
     /*
     TODO: the other way to get out organization data.
-    OrgunitService.get({ id: organization_data.id }, function (data) {
-    
+          by using orgUnits instead of static .json
     */
       coordinates = getLocation(organization_data, $scope.orgdata);
+
+      latitude = coordinates[0];
+      longitude= coordinates[1];
+
+      $scope.center = {
+
+      lng: longitude,
+      lat: latitude,
+      zoom: 10,
+      };
+
 
       var message = '<h4>' + organization_data.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">';
 
       console.log(organization_data.id);
+
+      angular.forEach(orgdata, function(item) {
+
+      // if one of the organisations in the API equals the organisation id
+      if (item.id === orgname.id) {
+      
+        coordinates = item.coordinates;
+
+      } 
 
       $scope.markers.push({
         lat: coordinates[0],
