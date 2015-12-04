@@ -20,6 +20,65 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
   $scope.editedOrgUnit = null;
 
+  $scope.submitNew = function(user) {
+    $scope.master = angular.copy(user);
+
+    $scope.master.openingDate = "2015-12-04";
+    
+    var config = {headers:
+		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
+							      (data) {
+							      })
+    console.log($scope.master);
+  };
+
+  $scope.update = function(user) {
+    $scope.master = angular.copy(user);
+
+    $scope.master = {openingDate:"2014-11-25",
+		     shortName:"Airport Centre",
+		     geometry: {
+		       coordinates: [-13,542022705078125, 8,773796283776631]
+		     },
+		     name:"Air Port Centre, Lungis",};
+    
+    var config = {headers:
+		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
+							      (data) {
+								console.log(data);
+								//see the length of data - if data has some value, it means dhis2
+								// redirect page, then login has failed
+								//otherwise login success proceed with your api calls....
+							      }).error(function (data) {
+								console.log("Error");
+							      });
+    console.log($scope.master);
+  };
+
+  $scope.callServer = function () {
+    console.log("Call server");
+    var credentials =  $.param({username: 'admin', password:
+				'district'});
+    var obj = {name: 'Benkia MCHP',
+	       
+    }
+    var config = {headers:
+		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $http.get('https://play.dhis2.org/demo/api/organisationUnits.json', config).success(function
+							      (data) {
+								console.log(data);
+								//see the length of data - if data has some value, it means dhis2
+								// redirect page, then login has failed
+								//otherwise login success proceed with your api calls....
+							      }).error(function (data) {
+								console.log("Error");
+							      });
+    
+    console.log("Call server end");
+  };
+
   $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
     console.log('Loaded geojson data GET');
     console.log(data);
@@ -162,7 +221,16 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $('#new-tab-link').html('Edit');
     console.log($scope.orgUnits[orgUnitCode]);
     $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
-      
+    
+    console.log($scope.editedOrgUnit);
+    console.log($scope.editedOrgUnit.properties);
+    console.log($scope.editedOrgUnit.properties.name);
+
+    $scope.user = {name : $scope.editedOrgUnit.properties.name,
+		   long : $scope.editedOrgUnit.geometry.coordinates[1],
+		   lat : $scope.editedOrgUnit.geometry.coordinates[0],
+		   code: $scope.editedOrgUnit.properties.code};
+    
     console.log($scope.editedOrgUnit);
     $scope.subPage = 'editorgtab';
   };

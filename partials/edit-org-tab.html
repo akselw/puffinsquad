@@ -3,19 +3,19 @@
   <label class="control-label" for="new-org">Edit organisational unit:</label> 
 
   <div class="form-group" id="new-org"> 
-    <input type="text" class="form-control" id="name" placeholder="Name" value="{{editedOrgUnit.properties.name}}"> 
+    <input type="text" class="form-control" id="name" placeholder="Name" ng-model="user.name" value="{{editedOrgUnit.properties.name}}"> 
   </div> 
 
   
 
   <label class="control-label" for="org-long">Longitude:</label> 
   <div class="form-group" id="org-long"> 
-    <input type="number" class="form-control" placeholder="Longitude" value="{{editedOrgUnit.geometry.coordinates[1]}}"> 
+    <input type="number" class="form-control" placeholder="Longitude" ng-model="user.long" value="{{editedOrgUnit.geometry.coordinates[1]}}"> 
   </div> 
 
   <label class="control-label" for="org-lat">Latitude:</label> 
   <div class="form-group" id="org-lat"> 
-    <input type="number" class="form-control" placeholder="Latitude"  value="{{editedOrgUnit.geometry.coordinates[0]}}"> 
+    <input type="number" class="form-control" placeholder="Latitude"  ng-model="user.lat" value="{{editedOrgUnit.geometry.coordinates[0]}}"> 
   </div>
 
 
@@ -33,5 +33,6 @@
   </div>
   
   <button ng-click="selectSearch()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
-  <button type="submit" class="btn btn-primary navbar-right">Save</button> 
+  <button ng-click="update(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>
+ <pre>user = {{user | json}}</pre>
