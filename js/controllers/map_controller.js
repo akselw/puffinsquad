@@ -311,6 +311,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       };
     }
   };
+  /*
 
   $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
     $scope.orgunit = data;
@@ -320,7 +321,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $http.get('js/json/orgunits.json').success(function (data) {
     $scope.orgunits = data;
   });
-
+*/
 
   $scope.markerExistsAtPoint = function (lat, lng) {
     for (var i = 0; i < $scope.markers.length; i++) {
@@ -444,14 +445,27 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     };
   };
 
-  $scope.showMap = function() {
+  $scope.showMap = function(organization_data) {
 
-    $scope.markers.push({
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
-      //message: "My Added Marker " + $scope.orgunits[0].name
-    });
-  };
+    /*
+    TODO: the other way to get out organization data.
+    OrgunitService.get({ id: organization_data.id }, function (data) {
+    
+    */
+      coordinates = getLocation(organization_data, $scope.orgdata);
+
+      var message = '<h4>' + organization_data.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">';
+
+      console.log(organization_data.id);
+
+      $scope.markers.push({
+        lat: coordinates[0],
+        lng: coordinates[1],
+        message: message,
+        getMessageScope: function() {return $scope; },
+        type: 'marker',
+      });
+    };
 
   angular.extend($scope, {
     layers: {
@@ -511,4 +525,24 @@ function showError(error) {
     x.innerHTML = "An unknown error occurred."
     break;
   }
+}
+
+function getLocation(orgname, orgUnits) {
+  
+  var coordinates = [];
+
+  angular.forEach(orgdata, function(item) {
+
+    // if one of the organisations in the API equals the organisation id
+    if (item.id === orgname.id) {
+      
+      coordinates = item.coordinates;
+
+    } 
+
+  });
+
+  return  {
+    coordinates
+  };
 }

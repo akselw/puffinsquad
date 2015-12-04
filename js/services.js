@@ -41,7 +41,8 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
   var level = 1;
 
   return $resource(
-    dhisAPI + 'api/organisationUnits.geojson?level=:level',
+    '/js/json/geo.json',
+   // dhisAPI + 'api/organisationUnits.geojson?level=:level',
     {
       level: level
     },
