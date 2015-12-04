@@ -223,7 +223,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     var marker = {
       lat: $scope.location.lat,
       lng: $scope.location.lng,
-      focus: true,
       message: '<draggable-marker-content></draggable-marker-content>',
       type: 'movable_marker',
       getMessageScope: function () {
