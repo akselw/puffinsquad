@@ -24,6 +24,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $scope.master = angular.copy(user);
 
     $scope.master.openingDate = "2015-12-04";
+    $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
     
     var config = {headers:
 		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
@@ -38,9 +39,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
     $scope.master = {openingDate:"2014-11-25",
 		     shortName:"Airport Centre",
-		     geometry: {
-		       coordinates: [-13,542022705078125, 8,773796283776631]
-		     },
+		     coordinates: "-13,542022705078125, 8,773796283776631",
 		     name:"Air Port Centre, Lungis",};
     
     var config = {headers:
