@@ -64,7 +64,7 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
 
   $scope.orgUnits = new Array();
 
-  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
+  $scope.geojson.data = OrgunitsGeoService.byLevel(2).get(function (data) {
     console.log('Loaded geojson data GET');
     console.log(data);
 
@@ -260,10 +260,6 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
 
     $scope.location.lng = leafEvent.latlng.lng;
     $scope.location.lat = leafEvent.latlng.lat;
-    if ($scope.markersAdded) {
-      $scope.markers.pop();
-    }
-    $scope.markersAdded = true;
 
     $scope.excludeMarkersOfType('movable_marker');
 
@@ -284,9 +280,8 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
   });
 
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
-    console.log(a.leafletEvent.target._latlng.lat);
-    $scope.current_pos.lat = a.leafletEvent.target._latlng.lat;
-    $scope.current_pos.lng = a.leafletEvent.target._latlng.lng;
+    $scope.location.lat = a.leafletEvent.target._latlng.lat;
+    $scope.location.lng = a.leafletEvent.target._latlng.lng;
   });
 
   $scope.$on('leafletDirectiveMarker.click', function (e, a) {
@@ -598,6 +593,5 @@ function getLocation(orgname, orgUnits) {
   });
 
   return  {
-    coordinates
   };
 }

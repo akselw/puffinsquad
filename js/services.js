@@ -40,6 +40,23 @@ myAppServices.factory("ProfileService", function ($resource) {
 myAppServices.factory('OrgunitsGeoService', function ($resource) {
   var level = 1;
 
+  return {
+    byLevel: function (level) {
+      return $resource(
+        'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
+        {
+          level: level
+        },
+        {
+          
+        }
+      )
+    }
+  }
+
+
+/***
+
 <<<<<<< HEAD
   return {
     byLevel: function (level) {
@@ -81,6 +98,9 @@ myAppServices.factory('OrgunitsGeoService', function ($resource) {
       );
     }
   };
+
+
+**/
 });
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
