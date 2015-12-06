@@ -27,7 +27,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
     
     var config = {headers:
-		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
+		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
     $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
 							      (data) {
 							      })
