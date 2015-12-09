@@ -14,7 +14,7 @@
 */
 
 angular.module('myApp.controllers', []).
-    controller('MyCtrl1', ['$scope', 'MeService', 'ProfileService',
+    controller('MyCtrl1', ['$scope', 'MeService', 'ProfileService', 'MapController',
         function ($scope, MeService, ProfileService) {
 
         $scope.dhisAPI = dhisAPI;
