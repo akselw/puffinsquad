@@ -13,6 +13,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     zoom: 4
   };
 
+  $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
+
   $scope.geojson = new Array();
   $scope.markers = new Array();
 
@@ -36,17 +38,15 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     var url = orgUnit.href;
     // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate}; 
     
-    var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
-			   'Content-Type': 'application/json'}};
+    // var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
+    // 			   'Content-Type': 'application/json'}};
     
-    $http.put(url, data, config).success(function(data) {
+    $http.put(url, data).success(function(data) {
       console.log(data);
-      
-    }).error(function (data) {
-      console.log("Error");
-      $scope.showEditErrorPage();
     });
   };
+
+  
 
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
@@ -57,7 +57,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     var config = {headers:
 		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
 		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
-    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
+    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config).success(function
 							      (data) {
 							      })
     console.log($scope.master);
