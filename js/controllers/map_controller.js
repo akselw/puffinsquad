@@ -18,7 +18,35 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
   $scope.orgUnits = new Array();
 
+  
+  $scope.orgUnitsJSON = new Array();
+
   $scope.editedOrgUnit = null;
+
+
+  
+  $scope.saveOrgUnit = function(orgUnit) {
+
+    // console.log(JSON.stringify(orgUnit.coordinates));
+    orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
+
+    // var url = 'https://play.dhis2.org/demo/api/organisationUnits';
+    var data = orgUnit;
+    
+    var url = orgUnit.href;
+    // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate}; 
+    
+    var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
+			   'Content-Type': 'application/json'}};
+    
+    $http.put(url, data, config).success(function(data) {
+      console.log(data);
+      
+    }).error(function (data) {
+      console.log("Error");
+      $scope.showEditErrorPage();
+    });
+  };
 
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
@@ -33,6 +61,30 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 							      (data) {
 							      })
     console.log($scope.master);
+  };
+
+  $scope.showEditPage = function(orgUnit) {
+    $scope.user=orgUnit;
+    $scope.subPage = 'editorgtab';
+  };
+
+  $scope.getOrgUnit = function(userId) {
+    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + userId;
+    var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
+    
+    $http.get(url, config).success(function(data) {
+      console.log(data);
+      data.coordinates = JSON.parse(data.coordinates);
+      
+      console.log(data.coordinates);
+      $scope.showEditPage(data);
+      // $scope.orgUnitsJSON[userId] = data;
+      // console.log($scope.orgUnitsJSON[userId]);
+      
+    }).error(function (data) {
+      console.log("Error");
+      $scope.showEditErrorPage();
+    });
   };
 
   $scope.update = function(user) {
@@ -214,24 +266,29 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   };
 
   $scope.selectEditOrg = function (orgUnitCode) {
-    $scope.edited = $scope.orgunit;
-    console.log($scope.edited.name);
+				     
+    // $scope.edited = $scope.orgunit;
+    // console.log($scope.edited.name);
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('Edit');
-    console.log($scope.orgUnits[orgUnitCode]);
+    // console.log($scope.orgUnits[orgUnitCode]);
     $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
-    
-    console.log($scope.editedOrgUnit);
-    console.log($scope.editedOrgUnit.properties);
-    console.log($scope.editedOrgUnit.properties.name);
 
-    $scope.user = {name : $scope.editedOrgUnit.properties.name,
-		   long : $scope.editedOrgUnit.geometry.coordinates[1],
-		   lat : $scope.editedOrgUnit.geometry.coordinates[0],
-		   code: $scope.editedOrgUnit.properties.code};
     
-    console.log($scope.editedOrgUnit);
+    // console.log("orgUnit returned");
+    $scope.getOrgUnit($scope.editedOrgUnit.id);
+    
+    // // console.log($scope.editedOrgUnit);
+    // // console.log($scope.editedOrgUnit.properties);
+    // // console.log($scope.editedOrgUnit.properties.name);
+
+    // $scope.user = {name : $scope.editedOrgUnit.properties.name,
+    // 		   long : $scope.editedOrgUnit.geometry.coordinates[1],
+    // 		   lat : $scope.editedOrgUnit.geometry.coordinates[0],
+    // 		   code: $scope.editedOrgUnit.id};
+    
+    // // console.log($scope.editedOrgUnit);
     $scope.subPage = 'editorgtab';
   };
 
