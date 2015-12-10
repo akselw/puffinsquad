@@ -27,19 +27,14 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
 
   
-  $scope.saveOrgUnit = function(orgUnit) {
+  $scope.saveEditedOrgUnit = function(orgUnit) {
 
-    // console.log(JSON.stringify(orgUnit.coordinates));
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
+    console.log(JSON.stringify(orgUnit));
 
-    // var url = 'https://play.dhis2.org/demo/api/organisationUnits';
     var data = orgUnit;
     
     var url = orgUnit.href;
-    // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate}; 
-    
-    // var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
-    // 			   'Content-Type': 'application/json'}};
     
     $http.put(url, data).success(function(data) {
       console.log(data);
@@ -53,14 +48,19 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
     $scope.master.openingDate = "2015-12-04";
     $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
+    $scope.master.parent = {code : "OU_255005"};
+    $scope.master.featureType = "POINT";
     
-    var config = {headers:
-		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
-		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
-    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config).success(function
-							      (data) {
-							      })
-    console.log($scope.master);
+    // var config = {headers:
+    // 		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
+    // 		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+
+    var url= 'https://play.dhis2.org/demo/api/organisationUnits';
+    
+    $http.post(url, $scope.master).success(function(data) {
+    }).success(function(data) {
+      console.log(data);
+    });
   };
 
   $scope.showEditPage = function(orgUnit) {
