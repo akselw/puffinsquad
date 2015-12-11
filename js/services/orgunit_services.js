@@ -10,11 +10,14 @@
 var myAppServices = angular.module('myApp.services', ['ngResource']);
 
 
-myAppServices.factory("OrgunitService", function ($resource, $http) {
+myAppServices.factory("OrganisationUnits", function ($resource, $http) {
   return $resource(
     dhisAPI + 'organisationUnits/:id.json',
     {
+      
     },
-    { }
+    {
+
+    }
   );
 });
