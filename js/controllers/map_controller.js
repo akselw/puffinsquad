@@ -71,8 +71,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + id;
     
     $http.get(url).success(function(data) {
-      
-    };
+      console.log(data);
+    });
   };
 
   $scope.httpSuccess = function(data) {
