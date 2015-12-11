@@ -46,16 +46,27 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
       level: level
     },
     {
+<<<<<<< HEAD:js/services.js
       
+=======
+      setLevel: function (l) {
+        level = l;
+      }
+>>>>>>> c5bf66209123ed76c829da96169c950c0935b8cc:example/js/services.js
     }
   );
 });
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
   var unitId = '';
+<<<<<<< HEAD:js/services.js
   var level = 1;
   return $resource(
     dhisAPI + 'api/organisationUnits.json?paging=false', //?paging=false', // organisationUnits.json?paging=false
+=======
+  return $resource(
+    dhisAPI + 'api/organisationUnits.json?paging=false', // organisationUnits.json?paging=false
+>>>>>>> c5bf66209123ed76c829da96169c950c0935b8cc:example/js/services.js
     {
       //id: unitId
     },

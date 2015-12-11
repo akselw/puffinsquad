@@ -1,7 +1,12 @@
 {
     "version":"1.0",
+<<<<<<< HEAD:manifest.webapp
     "name":"Puffinsquad",
     "description":"Example application for DHIS2.",
+=======
+    "name":"Puffinsquad Application",
+    "description":"An application showing organisation units for DHIS2.",
+>>>>>>> c5bf66209123ed76c829da96169c950c0935b8cc:example/manifest.webapp
     "icons":{
     "16":null,
         "48":"/img/icon-48.png",
@@ -9,6 +14,7 @@
 },
     "developer":{
     "url":"http://dhis2.org/",
+<<<<<<< HEAD:manifest.webapp
         "name":"Lars Kristian Roland",
         "company":"University of Oslo",
         "email":"lars@roland.bz"
@@ -16,6 +22,15 @@
     "activities":{
     "dhis":{
         "href":"inf5750-13.uio.no/"
+=======
+        "name":"Puffin Commando Squad",
+        "company":"University of Oslo",
+        "email":""
+},
+    "activities":{
+    "dhis":{
+        "href":"https://play.dhis2.org/demo/"
+>>>>>>> c5bf66209123ed76c829da96169c950c0935b8cc:example/manifest.webapp
     }
 },
     "launchUrl":null,
