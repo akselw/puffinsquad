@@ -13,17 +13,15 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     zoom: 4
   };
 
-
   $scope.new_marker_msg = ' \
     <p class="lead"> \
   	 Drag this marker to the location on the map where you want to add your organization unit. \
     </p> \
     <div class="row text-center"> \
-      <button type="button" class="btn btn-success btn-lg">Create new orgunit</button> \
+      <button type="button" ng-click="selectNewOrg()" class="btn btn-success btn-lg">Create new orgunit</button> \
     </div> \
   ';
 
-  
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
   $scope.geojson = {};
@@ -309,16 +307,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   });
 
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
-    var leafEvent = a.leafletEvent;
-
-    $scope.location.lng = leafEvent.latlng.lng;
-    $scope.location.lat = leafEvent.latlng.lat;
-
+    // Remove the existing movable markers
     $scope.excludeMarkersOfType('movable_marker');
 
+    // Then we add a new one at the current location
     $scope.markers.push({
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
+      lat: $scope.location.lat = a.leafletEvent.latlng.lat,
+      lng: $scope.location.lng = a.leafletEvent.latlng.lng,
       message: $scope.new_marker_msg,
       type: 'movable_marker',
       getMessageScope: function () {
@@ -326,7 +321,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       },
       draggable: true
     });
-
     $scope.selectNewOrg();
   });
 
