@@ -33,7 +33,7 @@
     height: 100px;
     background: #0000ff;
 }
-
+/*
 .angular-leaflet-map {
   width: 100%;
   height: auto;
@@ -43,6 +43,7 @@
   top: 80px;
   bottom: 0;
 }
+*/
 
 
 
@@ -66,4 +67,20 @@
 .search-bar .search .input input {
   width: 100%;
   border-radius: 4px;
+}
+
+
+
+.nav-tabs > li a:hover {
+  cursor: pointer;
+}
+
+
+.panel-body {
+  padding: 15px;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-top: 0;
+  bottom: 0;
+  position: relative;
 }

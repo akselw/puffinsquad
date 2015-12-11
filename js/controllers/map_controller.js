@@ -17,17 +17,24 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     zoom: 4
   };
 
+  $scope.new_marker_msg = ' \
+    <p class="lead"> \
+  	 Drag this marker to the location on the map where you want to add your organization unit. \
+    </p> \
+    <div class="row text-center"> \
+      <button type="button" ng-click="selectNewOrg()" class="btn btn-success btn-lg">Create new orgunit</button> \
+    </div> \
+  ';
+
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
   // $http.defaults.headers.common['Content-Type'] = 'application/json';
 
-  $scope.geojson = new Array();
+  $scope.geojson = {};
   $scope.markers = new Array();
-
   $scope.orgUnits = new Array();
 
-  
-  $scope.orgUnitsJSON = new Array();
 
+  $scope.orgUnitsJSON = new Array();
   $scope.editedOrgUnit = null;
 
   $scope.initNewOrgUnit = function() {
@@ -58,15 +65,58 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   
-  $scope.saveEditedOrgUnit = function(orgUnit) {
+  // $scope.saveEditedOrgUnit = function(orgUnit) {
 
+  // OrgunitsGeoService.get({ level: 4 }, function (data) {
+  //   console.log('Yo');
+  //   var features = data.features;
+  //   console.log(features);
+  //   features.forEach(function (entry) {
+  //     var geometry = entry.geometry;
+
+  //     if (geometry.type === 'Point')
+  //       $scope.markers.push({
+  //         lat: geometry.coordinates[1],
+  //         lng: geometry.coordinates[0],
+  //         type: 'marker',
+  //         id: entry.id,
+  //         message: "hello",
+  //         getMessageScope: function () {
+  //           return $scope;
+  //         },
+  //       });
+
+  //     $scope.orgUnits[entry.properties.code] = entry;
+  //   });
+  //   console.log( $scope.orgUnits["ke2gwHKHP3z"]);
+  // });
+
+  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
+    console.log('Hello');
+    $scope.geojson.style = {
+      fillColor: 'green',
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: 3,
+      fillOpacity: 0.8
+    };
+  }, function (error) {
+    console.log(error);
+  });
+
+
+  $scope.saveOrgUnit = function(orgUnit) {
+    // console.log(JSON.stringify(orgUnit.coordinates));
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
     console.log(JSON.stringify(orgUnit));
 
     var data = orgUnit;
-    
+
     var url = orgUnit.href;
     
+    // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate};
+
     $http.put(url, data).success(function(data) {
       console.log(data);
     });
@@ -126,6 +176,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
   
 
+
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
 
@@ -145,16 +196,16 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.getOrgUnit = function(userId) {
     var url = dhisAPI + 'api/organisationUnits/' + userId;
     var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
-    
+
     $http.get(url, config).success(function(data) {
       console.log(data);
-      data.coordinates = JSON.parse(data.coordinates);
-      
+      data.coordinates = angular.fromJson(data.coordinates);
+
       console.log(data.coordinates);
       $scope.showEditPage(data);
       // $scope.orgUnitsJSON[userId] = data;
       // console.log($scope.orgUnitsJSON[userId]);
-      
+
     }).error(function (data) {
       console.log("Error");
       $scope.showEditErrorPage();
@@ -168,7 +219,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 		     shortName:"Airport Centre",
 		     coordinates: "-13,542022705078125, 8,773796283776631",
 		     name:"Air Port Centre, Lungis",};
-    
+
     var config = {headers:
 		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
     $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
@@ -188,11 +239,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     var credentials =  $.param({username: 'admin', password:
 				'district'});
     var obj = {name: 'Benkia MCHP',
-	       
+
     }
-    var config = {headers:
-		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
-    $http.get('https://play.dhis2.org/demo/api/organisationUnits.json', config).success(function
+
+    $http.get('https://play.dhis2.org/demo/api/organisationUnits.json').success(function
 							      (data) {
 								console.log(data);
 								//see the length of data - if data has some value, it means dhis2
@@ -201,22 +251,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 							      }).error(function (data) {
 								console.log("Error");
 							      });
-    
+
     console.log("Call server end");
   };
-
-  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
-    console.log('Loaded geojson data GET');
-    console.log(data);
-    $scope.geojson.style = {
-      fillColor: 'green',
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: 3,
-      fillOpacity: 0.8
-    };
-  });
 
   $scope.markerMessage = function(entry) {
     // 	var groups = '';
@@ -263,7 +300,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     actions += '<button ng-click="selectEditOrg(\'' + entry.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
     
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
-    
+
     return message;
   }
 
@@ -343,7 +380,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.selectEditOrg = function (orgUnitId) {
-				     
+	
     // $scope.edited = $scope.orgunit;
     // console.log($scope.edited.name);
     $('#search-tab').removeClass("active");
@@ -363,7 +400,7 @@ Forrige som fungerte, har ikke testet med endring over
     
     // console.log($scope.orgUnits[orgUnitCode]);
 
-    
+
     // console.log("orgUnit returned");
     
     // // console.log($scope.editedOrgUnit);
@@ -374,7 +411,7 @@ Forrige som fungerte, har ikke testet med endring over
     // 		   long : $scope.editedOrgUnit.geometry.coordinates[1],
     // 		   lat : $scope.editedOrgUnit.geometry.coordinates[0],
     // 		   code: $scope.editedOrgUnit.id};
-    
+
     // // console.log($scope.editedOrgUnit);
     $scope.subPage = 'editorgtab';
   };
@@ -391,18 +428,9 @@ Forrige som fungerte, har ikke testet med endring over
   };
 
   $scope.showPosition = function (position) {
-
-    console.log("Finding current position on map . . . ");
-
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-    console.log(latitude);
-    console.log(longitude);
-
     $scope.center = {
-
-      lng: longitude,
-      lat: latitude,
+      lng: position.coords.longitude,
+      lat: position.coords.latitude,
       zoom: 10,
     };
 
@@ -416,57 +444,47 @@ Forrige som fungerte, har ikke testet med endring over
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
     var leafEvent = a.leafletEvent;
 
-    $scope.location.lng = leafEvent.latlng.lng;
-    $scope.location.lat = leafEvent.latlng.lat;
-    $scope.popMarker();
+    // $scope.location.lng = leafEvent.latlng.lng;
+    // $scope.location.lat = leafEvent.latlng.lat;
+    // $scope.popMarker();
     $scope.markersAdded = true;
 
+    // Remove the existing movable markers
+    $scope.excludeMarkersOfType('movable_marker');
 
-    var t = $scope.markers.filter(function (element, index, array) {
-      return element.type !== 'movable_marker';
-    });
-
-    angular.extend($scope, {
-      markers: t
-    });
-
-    var marker = {
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
-      message: '<draggable-marker-content></draggable-marker-content>',
+    // Then we add a new one at the current location
+    $scope.markers.push({
+      lat: $scope.location.lat = a.leafletEvent.latlng.lat,
+      lng: $scope.location.lng = a.leafletEvent.latlng.lng,
+      message: $scope.new_marker_msg,
       type: 'movable_marker',
       getMessageScope: function () {
         return $scope;
       },
       draggable: true
-    };
-
+    });
+    $scope.selectNewOrg();
     $scope.updateUserLocation();
-
-    $scope.markers.push(marker);
-
-    // marker.popupOpen();
   });
 
+  $scope.excludeMarkersOfType = function (type) {
+    var t = $scope.markers.filter(function (element, index, array) {
+      return element.type !== type;
+    });
+
+    angular.extend($scope, {
+      markers: t
+    });
+  }
+
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
-    console.log(a.leafletEvent.target._latlng.lat);
-    $scope.current_pos.lat = a.leafletEvent.target._latlng.lat;
-    $scope.current_pos.lng = a.leafletEvent.target._latlng.lng;
+    $scope.location.lat = a.leafletEvent.target._latlng.lat;
+    $scope.location.lng = a.leafletEvent.target._latlng.lng;
   });
 
   $scope.removeMarkers = function () {
     $scope.markers = new Array();
   }
-
-  $scope.sign_in = function () {
-    var encoded = window.btoa('admin:district');
-
-    $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
-
-    $http.post();
-  }
-
-
 
   $scope.init = function () {
 
@@ -528,22 +546,13 @@ Forrige som fungerte, har ikke testet med endring over
     }
   };
 
-  $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
-    $scope.orgunit = data;
-    $scope.init();
-  });
-
-  $http.get('js/json/orgunits.json').success(function (data) {
-    $scope.orgunits = data;
-  });
-
 
   $scope.markerExistsAtPoint = function (lat, lng) {
     for (var i = 0; i < $scope.markers.length; i++) {
       var marker = $scope.markers[i];
 
       if (marker.lng == lng && marker.lat == lat)
-	return true;
+	     return true;
     }
     return false;
   };
@@ -659,15 +668,6 @@ Forrige som fungerte, har ikke testet med endring over
         type: 'google'
       }
     };
-  };
-
-  $scope.showMap = function() {
-
-    $scope.markers.push({
-      lat: $scope.location.lat,
-      lng: $scope.location.lng,
-      //message: "My Added Marker " + $scope.orgunits[0].name
-    });
   };
 
   angular.extend($scope, {

@@ -8,7 +8,8 @@ angular.module('myApp', [
   'myApp.directives',
   'myApp.controllers',
   'ngResource',
-  'leaflet-directive'
+  'leaflet-directive',
+  'basicAuthModule'
 ]).
 config(['$routeProvider', function($routeProvider , RestangularProvider) {
   $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: 'MyCtrl1'});

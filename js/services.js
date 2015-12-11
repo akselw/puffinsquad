@@ -46,9 +46,7 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
       level: level
     },
     {
-      setLevel: function (l) {
-        level = l;
-      }
+      
     }
   );
 });
