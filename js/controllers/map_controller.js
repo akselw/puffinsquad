@@ -14,7 +14,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
-  $http.defaults.headers.common['Content-Type'] = 'application/json';
+  // $http.defaults.headers.common['Content-Type'] = 'application/json';
 
   $scope.geojson = new Array();
   $scope.markers = new Array();
@@ -27,18 +27,26 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.editedOrgUnit = null;
 
   $scope.initNewOrgUnit = function() {
-    $scope.user = {
-      name: "",
-      shortName: "",
-      openingDate: "",
-      parent: {code : "OU_255005"},
-      featureType: "POINT",
-    };
+    if (!$scope.user || $scope.subPage == 'editorgtab') {
+      $scope.user = {
+	name: "",
+	shortName: "",
+	openingDate: "",
+	parent: {code : "OU_255005"},
+	featureType: "POINT",
+      };
+    }
   }
 
+  $scope.popMarker = function() {
+    if ($scope.markersAdded) {
+      $scope.markers.pop()
+      $scope.markersAdded = false;
+    }
+  };
   
   $scope.updateUserLocation = function() {
-    if (!$scope.user) {
+    if (!$scope.user || $scope.subPage == 'editorgtab') {
       $scope.selectNewOrg();
     };
     $scope.user.coordinates = [$scope.location.lng, $scope.location.lat];
@@ -63,9 +71,19 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.cancelEdit = function() {
     console.log("Cancel");
     $scope.user = null;
+    $scope.popMarker();
     $scope.selectSearch();
   };
 
+  $scope.markerMessageJSON = function(orgUnit) {
+    var actions = "";
+    
+    actions += '<button ng-click="selectEditOrg(\'' + orgUnit.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
+    
+    var message = '<h4>' + orgUnit.name + '</h4>'  + '<br>' + actions;
+    
+    return message;
+  };
   
   $scope.createMarker = function(orgUnit) {
     coordinates = JSON.parse(orgUnit.coordinates);
@@ -74,7 +92,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       lng: coordinates[0],
       type: 'marker',
       id: orgUnit.id,
-      message:"Denne er fra serveren",
+      message: $scope.markerMessageJSON(orgUnit),
       getMessageScope: function () {
 	return $scope;
       },
@@ -86,10 +104,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     
     $http.get(url).success(function(data) {
       console.log(data);
-      if ($scope.markersAdded) {
-	$scope.markers.pop();
-	$scope.markersAdded = false;
-      }
+      $scope.popMarker();
       $scope.markers.push($scope.createMarker(data));
     });
   };
@@ -240,7 +255,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
     var actions = "";
     
-    actions += '<button ng-click="selectEditOrg(\'' + entry.properties.code +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
+    actions += '<button ng-click="selectEditOrg(\'' + entry.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
     
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
     
@@ -322,19 +337,29 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $scope.subPage = 'searchtab';
   };
 
-  $scope.selectEditOrg = function (orgUnitCode) {
+  $scope.selectEditOrg = function (orgUnitId) {
 				     
     // $scope.edited = $scope.orgunit;
     // console.log($scope.edited.name);
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('Edit');
+
+    
+
+    $scope.getOrgUnit(orgUnitId);
+/**
+Forrige som fungerte, har ikke testet med endring over
+    // $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
+    // $scope.getOrgUnit($scope.editedOrgUnit.id);
+**/
+
+
+    
     // console.log($scope.orgUnits[orgUnitCode]);
-    $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
 
     
     // console.log("orgUnit returned");
-    $scope.getOrgUnit($scope.editedOrgUnit.id);
     
     // // console.log($scope.editedOrgUnit);
     // // console.log($scope.editedOrgUnit.properties);
@@ -388,9 +413,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
     $scope.location.lng = leafEvent.latlng.lng;
     $scope.location.lat = leafEvent.latlng.lat;
-    if ($scope.markersAdded) {
-      $scope.markers.pop();
-    }
+    $scope.popMarker();
     $scope.markersAdded = true;
 
 
