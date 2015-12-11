@@ -1,20 +1,46 @@
 
-<div class="form-group"> 
-  <label class="control-label" for="new-org">Edit organisational unit:</label> 
+<div class="form-group">
+  
+  <label class="control-label" for="name">Name:</label> 
+  <div class="form-group" id="name"> 
+    <input type="text" class="form-control" placeholder="Name" ng-model="user.name" value="{{editedOrgUnit.properties.name}}"> 
+  </div>
 
-  <div class="form-group" id="new-org"> 
-    <input type="text" class="form-control" id="name" placeholder="Name" value="{{edited.name}}"> 
+  <label class="control-label" for="shortName">Short name:</label> 
+  <div class="form-group" id="shortName"> 
+    <input type="text" class="form-control" placeholder="Short name" ng-model="user.shortName"> 
   </div> 
 
+  <label class="control-label" for="displayName">Display name:</label> 
+  <div class="form-group" id="displayName"> 
+    <input type="text" class="form-control" placeholder="Display name" ng-model="user.displayName"> 
+  </div>
 
-  <div class="form-group" id="new-org"> 
-    <input type="number" class="form-control" ng-model="location.lat" placeholder="Latitude"> 
+ <label class="control-label" for="openingDate">Opening date:</label> 
+  <div class="form-group" id="openingDate"> 
+    <input type="text" class="form-control" placeholder="Opening date" ng-model="user.openingDate"> 
+  </div>
+
+  <label class="control-label" for="parent">Parent:</label> 
+  <div class="form-group" id="parent">
+    <input type="text" class="form-control" placeholder="Parent" ng-model="user.parent.name" disabled> 
+  </div> 
+  
+    <label class="control-label" for="">:</label> 
+  <div class="form-group" id=""> 
+    <input type="text" class="form-control" placeholder="" ng-model="user."> 
   </div> 
 
-
-  <div class="form-group" id="new-org"> 
-    <input type="number" class="form-control"  ng-model="location.lng" placeholder="Longitude"> 
+  <label class="control-label" for="org-long">Longitude:</label> 
+  <div class="form-group" id="org-long"> 
+    <input type="number" class="form-control" placeholder="Longitude" ng-model="user.coordinates[1]"> 
   </div> 
+
+  <label class="control-label" for="org-lat">Latitude:</label> 
+  <div class="form-group" id="org-lat"> 
+    <input type="number" class="form-control" placeholder="Latitude"  ng-model="user.coordinates[0]"> 
+  </div>
+
 
   <div class="form-group">
     <label for="sel1">Belongs to set:</label>
@@ -30,5 +56,6 @@
   </div>
   
   <button ng-click="selectSearch()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
-  <button type="submit" class="btn btn-primary navbar-right">Save</button> 
+  <button ng-click="saveOrgUnit(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>
+ <pre>user = {{user | json}}</pre>

@@ -1,33 +1,42 @@
 
 <div class="form-group"> 
-  <label class="control-label" for="new-org">New organisational unit:</label> 
+  <label class="control-label" for="new-org">Name:</label> 
 
   <div class="form-group" id="new-org"> 
-    <input type="text" class="form-control" id="name" placeholder="Name"> 
-  </div> 
-
-
-  <div class="form-group" id="new-org"> 
-    <input type="number" class="form-control" ng-model="location.lat" placeholder="Latitude"> 
-  </div> 
-
-
-  <div class="form-group" id="new-org"> 
-    <input type="number" class="form-control"  ng-model="location.lng" placeholder="Longitude"> 
-  </div> 
-
-  <div class="form-group">
-    <label for="sel1">Belongs to set:</label>
-    <select class="form-control" id="sel1">
-      <option >---------</option>
-      <option>Org unit set 1</option>
-      <option>Org unit set 2</option>
-      <option>Org unit set 3</option>
-      <option>Org unit set 4</option>
-      <option>Org unit set 5</option>
-      <option>Org unit set 6</option>
-    </select>
+    <input type="text" class="form-control" id="name" placeholder="Name" ng-model="user.name" > 
   </div>
+
   
-  <button type="submit" class="btn btn-primary navbar-right">Save</button> 
+  <label class="control-label" for="short-name">Short name:</label> 
+    <div class="form-group" id="short-name"> 
+    <input type="text" class="form-control"  placeholder="Short name" ng-model="user.shortName"> 
+  </div> 
+
+  
+
+  <label class="control-label" for="org-long">Longitude:</label>
+  <div class="form-group" id="org-long">
+    <input type="number" class="form-control" placeholder="Longitude" ng-model="location.lng">
+  </div>
+
+  <label class="control-label" for="org-lat">Latitude:</label>
+  <div class="form-group" id="org-lat">
+    <input type="number" class="form-control" placeholder="Latitude"  ng-model="location.lat">
+  </div>
+
+
+  <!-- <div class="form-group"> -->
+  <!--   <label for="sel1">Belongs to set:</label> -->
+  <!--   <select class="form-control" id="sel1"> -->
+  <!--     <option >---------</option> -->
+  <!--     <option>Org unit set 1</option> -->
+  <!--     <option>Org unit set 2</option> -->
+  <!--     <option>Org unit set 3</option> -->
+  <!--     <option>Org unit set 4</option> -->
+  <!--     <option>Org unit set 5</option> -->
+  <!--     <option>Org unit set 6</option> -->
+  <!--   </select> -->
+  <!-- </div> -->
+  
+  <button ng-click="submitNew(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>

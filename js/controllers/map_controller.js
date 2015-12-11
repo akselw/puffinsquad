@@ -1,15 +1,11 @@
 var myApp = angular.module('myApp.controllers');
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$cacheFactory', 'OrgunitsGeoService', 'OrgunitService', 'basicAuthService',
-function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, OrgunitService, basicAuthService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, OrgunitsGeoService, OrgunitService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
     lat: $scope.location.lat,
     lng: $scope.location.lng
   };
-
-  $scope.cache = $cacheFactory('orgunitCache');
-  $scope.current_unit = {};
 
   $scope.center = {
     lat: 0.577400,
@@ -17,57 +13,53 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
     zoom: 4
   };
 
-  $scope.authenticate = function () {
-    basicAuthService.generateAuthorizationHeader('admin', 'district');
-  }
 
-  $scope.testLogin = function () {
-    console.log('Hello World');
-    var userData = { username: 'admin', password: 'district' };
+  $scope.new_marker_msg = ' \
+    <p class="lead"> \
+  	 Drag this marker to the location on the map where you want to add your organization unit. \
+    </p> \
+    <div class="row text-center"> \
+      <button type="button" class="btn btn-success btn-lg">Create new orgunit</button> \
+    </div> \
+  ';
 
-    var successCB = function (response) {
-      console.log('Success! ' + response);
-    };
+  
+  $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
-    var errorCB = function (error) {
-      console.log('Error :(  ');
-      console.log(error);
-    }
+  $scope.geojson = {};
+  $scope.markers = new Array();
+  $scope.orgUnits = new Array();
 
-    // basicAuthService.generateAuthorizationHeader('admin', 'district');
-    basicAuthService.login('https://play.dhis2.org/', userData, successCB, errorCB);
 
-    OrgunitsGeoService.get({ level: 4 }, function (data) {
-      var features = data.features;
+  $scope.orgUnitsJSON = new Array();
+  $scope.editedOrgUnit = null;
 
-      features.forEach(function (entry) {
-        var geometry = entry.geometry;
+  OrgunitsGeoService.get({ level: 4 }, function (data) {
+    console.log('Yo');
+    var features = data.features;
+    console.log(features);
+    features.forEach(function (entry) {
+      var geometry = entry.geometry;
 
-        $scope.current_unit = $scope.isCached(entry.id) ? $scope.getOrgunit(entry.id) : OrgunitService.get({ id: entry.id }, function (data) {
-          console.log('GET');
-        });
-
-        if (geometry.type === 'Point')
+      if (geometry.type === 'Point')
         $scope.markers.push({
           lat: geometry.coordinates[1],
           lng: geometry.coordinates[0],
           type: 'marker',
           id: entry.id,
-          message: '<orgunitMarkerMsg></orgunitMarkerMsg>'
+          message: "hello",
+          getMessageScope: function () {
+            return $scope;
+          },
         });
-      });
+
+      $scope.orgUnits[entry.properties.code] = entry;
     });
-  }
+    console.log( $scope.orgUnits["ke2gwHKHP3z"]);
+  });
 
-  $scope.geojson = {};
-  $scope.markers = new Array();
-
-  $scope.orgUnits = new Array();
-
-  $scope.geojson.data = OrgunitsGeoService.byLevel(2).get(function (data) {
-    console.log('Loaded geojson data GET');
-    console.log(data);
-
+  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
+    console.log('Hello');
     $scope.geojson.style = {
       fillColor: 'green',
       weight: 2,
@@ -76,10 +68,109 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
       dashArray: 3,
       fillOpacity: 0.8
     };
-
-
-    console.log($scope.geojson);
+  }, function (error) {
+    console.log(error);
   });
+
+
+  $scope.saveOrgUnit = function(orgUnit) {
+    // console.log(JSON.stringify(orgUnit.coordinates));
+    orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
+
+    // var url = 'https://play.dhis2.org/demo/api/organisationUnits';
+    var data = orgUnit;
+
+    var url = orgUnit.href;
+    // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate};
+
+    $http.put(url, data).success(function(data) {
+      console.log(data);
+    });
+  };
+
+
+
+  $scope.submitNew = function(user) {
+    $scope.master = angular.copy(user);
+
+    $scope.master.openingDate = "2015-12-04";
+    $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
+
+    var config = {headers:
+		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
+		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config).success(function
+							      (data) {
+							      })
+    console.log($scope.master);
+  };
+
+  $scope.showEditPage = function(orgUnit) {
+    $scope.user=orgUnit;
+    $scope.subPage = 'editorgtab';
+  };
+
+  $scope.getOrgUnit = function(userId) {
+    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + userId;
+    var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
+
+    $http.get(url, config).success(function(data) {
+      console.log(data);
+      data.coordinates = angular.fromJson(data.coordinates);
+
+      console.log(data.coordinates);
+      $scope.showEditPage(data);
+      // $scope.orgUnitsJSON[userId] = data;
+      // console.log($scope.orgUnitsJSON[userId]);
+
+    }).error(function (data) {
+      console.log("Error");
+      $scope.showEditErrorPage();
+    });
+  };
+
+  $scope.update = function(user) {
+    $scope.master = angular.copy(user);
+
+    $scope.master = {openingDate:"2014-11-25",
+		     shortName:"Airport Centre",
+		     coordinates: "-13,542022705078125, 8,773796283776631",
+		     name:"Air Port Centre, Lungis",};
+
+    var config = {headers:
+		  {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config ).success(function
+							      (data) {
+								console.log(data);
+								//see the length of data - if data has some value, it means dhis2
+								// redirect page, then login has failed
+								//otherwise login success proceed with your api calls....
+							      }).error(function (data) {
+								console.log("Error");
+							      });
+    console.log($scope.master);
+  };
+
+  $scope.callServer = function () {
+    console.log("Call server");
+    var credentials =  $.param({username: 'admin', password:
+				'district'});
+    var obj = {name: 'Benkia MCHP',
+
+    }
+
+    $http.get('https://play.dhis2.org/demo/api/organisationUnits.json').success(function
+							      (data) {
+								console.log(data);
+								//see the length of data - if data has some value, it means dhis2
+								// redirect page, then login has failed
+								//otherwise login success proceed with your api calls....
+							      }).error(function (data) {
+								console.log("Error");
+							      });
+
+    console.log("Call server end");
+  };
 
   $scope.markerMessage = function(entry) {
     // 	var groups = '';
@@ -123,46 +214,11 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
 
     var actions = "";
 
-    actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
+    actions += '<button ng-click="selectEditOrg(\'' + entry.properties.code +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
 
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
 
     return message;
-  }
-
-
-  OrgunitsGeoService.byLevel(2, function (data) {
-    var features = data.features;
-    console.log(features);
-    features.forEach(function (entry) {
-      var geometry = entry.geometry;
-
-
-      if (geometry.type === 'Point')
-      $scope.markers.push({
-        lat: geometry.coordinates[1],
-        lng: geometry.coordinates[0],
-        type: 'marker',
-        id: entry.id,
-
-        message: $scope.markerMessage(entry),
-        getMessageScope: function () {
-          return $scope;
-        },
-      });
-
-      $scope.orgUnits[entry.properties.code] = entry;
-
-    });
-    console.log( $scope.orgUnits["ke2gwHKHP3z"]);
-  });
-
-  $scope.isCached = function (key) {
-    return $scope.cache.get(key);
-  }
-
-  $scope.getOrgunit = function (id) {
-    return $scope.cache.get(id);
   }
 
 
@@ -173,8 +229,6 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
       $(this).find(":button").hide();
     });
   });
-
-
   $scope.markersAdded = false;
   $scope.subPage='searchtab';
   $scope.edited = null;
@@ -202,12 +256,30 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
     $scope.subPage = 'searchtab';
   };
 
-  $scope.selectEditOrg = function () {
-    $scope.edited = $scope.orgunit;
-    console.log($scope.edited.name);
+  $scope.selectEditOrg = function (orgUnitCode) {
+
+    // $scope.edited = $scope.orgunit;
+    // console.log($scope.edited.name);
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('Edit');
+    // console.log($scope.orgUnits[orgUnitCode]);
+    $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
+
+
+    // console.log("orgUnit returned");
+    $scope.getOrgUnit($scope.editedOrgUnit.id);
+
+    // // console.log($scope.editedOrgUnit);
+    // // console.log($scope.editedOrgUnit.properties);
+    // // console.log($scope.editedOrgUnit.properties.name);
+
+    // $scope.user = {name : $scope.editedOrgUnit.properties.name,
+    // 		   long : $scope.editedOrgUnit.geometry.coordinates[1],
+    // 		   lat : $scope.editedOrgUnit.geometry.coordinates[0],
+    // 		   code: $scope.editedOrgUnit.id};
+
+    // // console.log($scope.editedOrgUnit);
     $scope.subPage = 'editorgtab';
   };
 
@@ -223,18 +295,9 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
   };
 
   $scope.showPosition = function (position) {
-
-    console.log("Finding current position on map . . . ");
-
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-    console.log(latitude);
-    console.log(longitude);
-
     $scope.center = {
-
-      lng: longitude,
-      lat: latitude,
+      lng: position.coords.longitude,
+      lat: position.coords.latitude,
       zoom: 10,
     };
 
@@ -243,19 +306,7 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
   $scope.$on('leafletDirectiveGeoJson.click', function (e, a) {
     console.log('Hello geo');
     console.log(a);
-
-    console.log(a.model.id);
   });
-
-  $scope.excludeMarkersOfType = function (type) {
-    var new_markers = $scope.markers.filter(function (element, index, array) {
-      return element.type !== type;
-    });
-
-    angular.extend($scope, {
-      markers: new_markers
-    });
-  };
 
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
     var leafEvent = a.leafletEvent;
@@ -265,44 +316,38 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
 
     $scope.excludeMarkersOfType('movable_marker');
 
-    var marker = {
+    $scope.markers.push({
       lat: $scope.location.lat,
       lng: $scope.location.lng,
-      focus: true,
-      message: '<draggableMarkerContent></draggableMarkerContent>',
+      message: $scope.new_marker_msg,
       type: 'movable_marker',
       getMessageScope: function () {
         return $scope;
       },
       draggable: true
-    };
-    $scope.markers.push(marker);
-    $scope.selectNewOrg();
+    });
 
+    $scope.selectNewOrg();
   });
+
+  $scope.excludeMarkersOfType = function (type) {
+    var t = $scope.markers.filter(function (element, index, array) {
+      return element.type !== type;
+    });
+
+    angular.extend($scope, {
+      markers: t
+    });
+  }
 
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
     $scope.location.lat = a.leafletEvent.target._latlng.lat;
     $scope.location.lng = a.leafletEvent.target._latlng.lng;
   });
 
-  $scope.$on('leafletDirectiveMarker.click', function (e, a) {
-
-  });
-
   $scope.removeMarkers = function () {
     $scope.markers = new Array();
   }
-
-  $scope.sign_in = function () {
-    var encoded = window.btoa('admin:district');
-
-    $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
-
-    $http.post();
-  }
-
-
 
   $scope.init = function () {
 
@@ -337,15 +382,15 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
 
 
       if ($scope.orgunit.access.update)
-      actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
+	actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
 
       if ($scope.orgunit.access.delete)
-      actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
+	actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
 
 
       var message = '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
-      $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
-      dataSets + '<br>' + programs + '<br>' + actions;
+	  $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
+	  dataSets + '<br>' + programs + '<br>' + actions;
 
 
       $scope.markers.push({
@@ -363,185 +408,112 @@ function ($scope, $http, $compile, $filter, $cacheFactory, OrgunitsGeoService, O
       };
     }
   };
-  /*
 
-  $http.get('js/json/orgunits/qjboFI0irVu.json').success(function (data) {
-  $scope.orgunit = data;
-  $scope.init();
-});
 
-$http.get('js/json/orgunits.json').success(function (data) {
-$scope.orgunits = data;
-});
-*/
+  $scope.markerExistsAtPoint = function (lat, lng) {
+    for (var i = 0; i < $scope.markers.length; i++) {
+      var marker = $scope.markers[i];
 
-$scope.markerExistsAtPoint = function (lat, lng) {
-  for (var i = 0; i < $scope.markers.length; i++) {
-    var marker = $scope.markers[i];
+      if (marker.lng == lng && marker.lat == lat)
+	     return true;
+    }
+    return false;
+  };
 
-    if (marker.lng == lng && marker.lat == lat)
-    return true;
-  }
-  return false;
-};
+  $scope.findOrgunitAndRelocate = function (unitId) {
+    console.log("Heklllo");
+    $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
+      var unit = data;
+      var coords = $.parseJSON(unit.coordinates);
 
-$scope.findOrgunitAndRelocate = function (unitId) {
-  console.log("Heklllo");
-  $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
-    var unit = data;
-    var coords = $.parseJSON(unit.coordinates);
+      console.log(unit.id);
 
-    console.log(unit.id);
-
-    if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
-      $scope.geojson = {
-        data: {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "properties": {},
-              "geometry": {
-                "type": unit.featureType === 'POLYGON' ? 'Polygon' : "MultiPolygon",
-                "coordinates": coords
+      if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
+        $scope.geojson = {
+          data: {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                  "type": unit.featureType === 'POLYGON' ? 'Polygon' : "MultiPolygon",
+                  "coordinates": coords
+                }
               }
-            }
-          ]
-        },
-        style: {
-          fillColor: 'green',
-          weight: 2,
-          opacity: 1,
-          color: 'white',
-          dashArray: 3,
-          fillOpacity: 0.8
+            ]
+          },
+          style: {
+            fillColor: 'green',
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: 3,
+            fillOpacity: 0.8
+          }
+        };
+      } else if (unit.featureType === 'POINT') {
+        if (!$scope.markerExistsAtPoint(coords[0], coords[1])) {
+          $scope.markers.push({
+            lng: coords[0],
+            lat: coords[1],
+            type: 'marker',
+            message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
+              $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
+              dataSets + '<br>' + programs + '<br>' + actions
+          });
         }
-      };
-    } else if (unit.featureType === 'POINT') {
-      if (!$scope.markerExistsAtPoint(coords[0], coords[1])) {
-        $scope.markers.push({
+        $scope.center = {
           lng: coords[0],
           lat: coords[1],
-          type: 'marker',
-          message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
-          $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
-          dataSets + '<br>' + programs + '<br>' + actions
-        });
+          zoom: 10
+        };
       }
-      $scope.center = {
-        lng: coords[0],
-        lat: coords[1],
-        zoom: 10
-      };
-    }
-  });
-};
-
-$scope.pages = { searchtab: 'partials/search-tab.html',
-neworgtab: 'partials/new-org-tab.html',
-editorgtab: 'partials/edit-org-tab.html',};
-
-$scope.removeOsmLayer = function () {
-  delete this.layers.baselayers.osm;
-  delete this.layers.baselayers.googleTerrain;
-  delete this.layers.baselayers.googleRoadmap;
-  delete this.layers.baselayers.googleHybrid;
-  this.layers.baselayers.cycle = {
-    name: 'OpenCycleMap',
-    type: 'xyz',
-    url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-    layerOptions: {
-      subdomains: ['a', 'b', 'c'],
-      attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      continuousWorld: true
-    }
+    });
   };
-};
 
-$scope.addOsmLayer = function () {
-  delete this.layers.baselayers.cycle;
-  delete this.layers.baselayers.googleTerrain;
-  delete this.layers.baselayers.googleRoadmap;
-  delete this.layers.baselayers.googleHybrid;
-  this.layers.baselayers.osm = {
-    name: 'OpenStreetMap',
-    type: 'xyz',
-    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    layerOptions: {
-      subdomains: ['a', 'b', 'c'],
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      continuousWorld: true
-    }
+  $scope.pages = { searchtab: 'partials/search-tab.html',
+		   neworgtab: 'partials/new-org-tab.html',
+		   editorgtab: 'partials/edit-org-tab.html',};
+
+  $scope.removeOsmLayer = function () {
+    delete this.layers.baselayers.osm;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.cycle = {
+      name: 'OpenCycleMap',
+      type: 'xyz',
+      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
   };
-};
 
-$scope.showGoogleLayers = function() {
-  delete this.layers.baselayers.cycle;
-  delete this.layers.baselayers.osm;
-  this.layers.baselayers = {
-    googleTerrain: {
-      name: 'Google Terrain',
-      layerType: 'TERRAIN',
-      type: 'google'
-    },
-    googleHybrid: {
-      name: 'Google Hybrid',
-      layerType: 'HYBRID',
-      type: 'google'
-    },
-    googleRoadmap: {
-      name: 'Google Streets',
-      layerType: 'ROADMAP',
-      type: 'google'
-    }
+  $scope.addOsmLayer = function () {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.osm = {
+      name: 'OpenStreetMap',
+      type: 'xyz',
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
   };
-};
 
-$scope.showMap = function(organization_data) {
-
-  /*
-  TODO: the other way to get out organization data.
-  OrgunitService.get({ id: organization_data.id }, function (data) {
-
-  */
-  coordinates = getLocation(organization_data, $scope.orgdata);
-
-  var message = '<h4>' + organization_data.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">';
-
-  console.log(organization_data.id);
-
-  $scope.markers.push({
-    lat: coordinates[0],
-    lng: coordinates[1],
-    message: message,
-    getMessageScope: function() {return $scope; },
-    type: 'marker',
-  });
-};
-
-angular.extend($scope, {
-  layers: {
-    baselayers: {
-      osm: {
-        name: 'OpenStreetMap',
-        type: 'xyz',
-        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        layerOptions: {
-          subdomains: ['a', 'b', 'c'],
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          continuousWorld: true
-        }
-      },
-      cycle: {
-        name: 'OpenCycleMap',
-        type: 'xyz',
-        url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-        layerOptions: {
-          subdomains: ['a', 'b', 'c'],
-          attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          continuousWorld: true
-        }
-      },
+  $scope.showGoogleLayers = function() {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.osm;
+    this.layers.baselayers = {
       googleTerrain: {
         name: 'Google Terrain',
         layerType: 'TERRAIN',
@@ -557,43 +529,65 @@ angular.extend($scope, {
         layerType: 'ROADMAP',
         type: 'google'
       }
+    };
+  };
+
+  angular.extend($scope, {
+    layers: {
+      baselayers: {
+        osm: {
+          name: 'OpenStreetMap',
+          type: 'xyz',
+          url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          layerOptions: {
+            subdomains: ['a', 'b', 'c'],
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            continuousWorld: true
+          }
+        },
+        cycle: {
+          name: 'OpenCycleMap',
+          type: 'xyz',
+          url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+          layerOptions: {
+            subdomains: ['a', 'b', 'c'],
+            attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            continuousWorld: true
+          }
+        },
+        googleTerrain: {
+          name: 'Google Terrain',
+          layerType: 'TERRAIN',
+          type: 'google'
+        },
+        googleHybrid: {
+          name: 'Google Hybrid',
+          layerType: 'HYBRID',
+          type: 'google'
+        },
+        googleRoadmap: {
+          name: 'Google Streets',
+          layerType: 'ROADMAP',
+          type: 'google'
+        }
+      }
     }
-  }
-});
+  });
 }]);
 
 function showError(error) {
   switch(error.code) {
-    case error.PERMISSION_DENIED:
+  case error.PERMISSION_DENIED:
     x.innerHTML = "User denied the request for Geolocation."
     break;
-    case error.POSITION_UNAVAILABLE:
+  case error.POSITION_UNAVAILABLE:
     x.innerHTML = "Location information is unavailable."
     break;
-    case error.TIMEOUT:
+  case error.TIMEOUT:
     x.innerHTML = "The request to get user location timed out."
     break;
-    case error.UNKNOWN_ERROR:
+  case error.UNKNOWN_ERROR:
     x.innerHTML = "An unknown error occurred."
     break;
   }
-}
-
-function getLocation(orgname, orgUnits) {
-
-  var coordinates = [];
-
-  angular.forEach(orgdata, function(item) {
-
-    // if one of the organisations in the API equals the organisation id
-    if (item.id === orgname.id) {
-
-      coordinates = item.coordinates;
-
-    }
-
-  });
-
-  return  {
-  };
 }

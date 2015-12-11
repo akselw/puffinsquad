@@ -17,7 +17,7 @@
     xhReq.open("GET", "manifest.webapp", false);
     xhReq.send(null);
     var serverResponse = JSON.parse(xhReq.responseText);
-    var dhisAPI = serverResponse.activities.dhis.href + '/api/';
+    var dhisAPI = serverResponse.activities.dhis.href;
 </script>
 <!-- <body style="padding-top: 80px;"> -->
 
@@ -72,7 +72,6 @@
 <script src="bower_components/angular-base64-codec/dist/angular-base64-codec.min.js"></script>
 <script src="bower_components/angular-basic-auth/dist/angular-basic-auth.min.js"></script>
 
-<script src="js/leaflet.js"></script>
 <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
 <script src="js/angular-leaflet-directive.min.js"></script>
 
@@ -98,10 +97,6 @@
 <script src="js/jquery-1.10.1.min.js"></script>
 <script src="js/jquery-migrate-1.2.1.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-
-<script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&amp;sensor=false"></script>
-<script src="js/Google.js"></script>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
 

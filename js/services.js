@@ -37,80 +37,30 @@ myAppServices.factory("ProfileService", function ($resource) {
     );
 });
 
-myAppServices.factory('OrgunitsGeoService', function ($resource) {
+myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
   var level = 1;
 
-  return {
-    byLevel: function (level) {
-      return $resource(
-        'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
-        {
-          level: level
-        },
-        {
-          
-        }
-      )
-    }
-  }
-
-
-/***
-
-<<<<<<< HEAD
-  return {
-    byLevel: function (level) {
-      return $resource(
-        'https://play.dhis2.org/demo/api/organisationUnits.geojson?level=:level',
-        {
-          level: level
-        },
-        { }
-      );
-=======
   return $resource(
-    '/js/json/geo.json',
-   // dhisAPI + 'api/organisationUnits.geojson?level=:level',
+    dhisAPI + 'api/organisationUnits.geojson?level=:level',
     {
       level: level
->>>>>>> 798333773ba5a27d1dd81b14e8487a9d1f53eb7a
     },
-    withParent: function (parent, levels) {
-      var levels = '';
-
-      for (var i = 0; i < levels.length; i++) {
-        levels += 'level=' + levels[i];
-
-        if (i+1 < levels.length)
-          levels += '&';
-      }
-
-      var ending = levels += '&parent=' + parent;
-
-      return $resource(
-        'https://play.dhis2.org/demo/api/organisationUnits.geojson?' + ending,
-        {
-
-        },
-        {
-
-        }
-      );
+    {
+      
     }
-  };
-
-
-**/
+  );
 });
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
   var unitId = '';
   return $resource(
-    dhisAPI + 'organisationUnits/:id.json',
+    dhisAPI + 'api/organisationUnits/:id.json',
     {
       id: unitId
     },
-    { }
+    {
+
+    }
   );
 });
 
