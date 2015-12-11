@@ -1,6 +1,6 @@
 var myApp = angular.module('myApp.controllers');
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, OrgunitsGeoService, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
     lat: $scope.location.lat,
@@ -14,6 +14,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   };
 
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
+  $http.defaults.headers.common['Content-Type'] = 'application/json';
 
   $scope.geojson = new Array();
   $scope.markers = new Array();
@@ -24,6 +25,24 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $scope.orgUnitsJSON = new Array();
 
   $scope.editedOrgUnit = null;
+
+  $scope.initNewOrgUnit = function() {
+    $scope.user = {
+      name: "",
+      shortName: "",
+      openingDate: "",
+      parent: {code : "OU_255005"},
+      featureType: "POINT",
+    };
+  }
+
+  
+  $scope.updateUserLocation = function() {
+    if (!$scope.user) {
+      $scope.selectNewOrg();
+    };
+    $scope.user.coordinates = [$scope.location.lng, $scope.location.lat];
+  };
 
 
   
@@ -39,28 +58,43 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $http.put(url, data).success(function(data) {
       console.log(data);
     });
+    $scope.user = null;
   };
 
+  $scope.cancelEdit = function() {
+    console.log("Cancel");
+    $scope.user = null;
+    $scope.selectSearch();
+  };
+
+  $scope.pushNewOrgUnit = function(id) { 
+    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + id;
+    
+    $http.get(url).success(function(data) {
+      
+    };
+  };
+
+  $scope.httpSuccess = function(data) {
+    console.log(data);
+    response = data.response.importCount;
+    console.log(response);
+    if (response['imported'] == 1 || response['updated'] == 1) {
+      $scope.subPage = 'savedtab';
+      $timeout($scope.cancelEdit, 1500);
+    }
+  };
   
 
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
 
-    $scope.master.openingDate = "2015-12-04";
-    $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
-    $scope.master.parent = {code : "OU_255005"};
-    $scope.master.featureType = "POINT";
-    
-    // var config = {headers:
-    // 		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
-    // 		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
+    $scope.master.coordinates = JSON.stringify($scope.master.coordinates);
 
     var url= 'https://play.dhis2.org/demo/api/organisationUnits';
     
     $http.post(url, $scope.master).success(function(data) {
-    }).success(function(data) {
-      console.log(data);
-    });
+    }).success($scope.httpSuccess);
   };
 
   $scope.showEditPage = function(orgUnit) {
@@ -255,6 +289,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('New');
+    $scope.initNewOrgUnit();
     $scope.subPage = 'neworgtab';
   };
 
@@ -355,11 +390,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       },
       draggable: true
     };
-    $scope.selectNewOrg();
+
+    $scope.updateUserLocation();
 
     $scope.markers.push(marker);
 
-    marker.popupOpen();
+    // marker.popupOpen();
   });
 
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
@@ -516,7 +552,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
   $scope.pages = { searchtab: 'partials/search-tab.html',
 		   neworgtab: 'partials/new-org-tab.html',
-		   editorgtab: 'partials/edit-org-tab.html',};
+		   editorgtab: 'partials/edit-org-tab.html',
+		   savedtab: 'partials/saved.html',};
 
   $scope.removeOsmLayer = function () {
     delete this.layers.baselayers.osm;

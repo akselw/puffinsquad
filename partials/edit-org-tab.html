@@ -11,11 +11,6 @@
     <input type="text" class="form-control" placeholder="Short name" ng-model="user.shortName"> 
   </div> 
 
-  <label class="control-label" for="displayName">Display name:</label> 
-  <div class="form-group" id="displayName"> 
-    <input type="text" class="form-control" placeholder="Display name" ng-model="user.displayName"> 
-  </div>
-
  <label class="control-label" for="openingDate">Opening date:</label> 
   <div class="form-group" id="openingDate"> 
     <input type="text" class="form-control" placeholder="Opening date" ng-model="user.openingDate"> 
@@ -55,7 +50,6 @@
     </select>
   </div>
   
-  <button ng-click="selectSearch()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
+  <button ng-click="cancelEdit()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
   <button ng-click="saveEditedOrgUnit(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>
- <pre>user = {{user | json}}</pre>
