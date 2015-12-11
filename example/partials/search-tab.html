@@ -17,11 +17,11 @@
   
   <span ng-show="searchText.length > 0">
     <ul class="list-group" id="searchTextResults">
-      <li class="list-group-item"  ng-repeat="orgs in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)">
-	<a ng-click="showMap(orgs)" style="display:block; min-height:100%;">{{ orgs.orgname }}</a>
+      <li class="list-group-item"  ng-repeat="organizations in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)">
+	<a ng-click="showMap(orgs)" style="display:block; min-height:100%;">{{ organizations.orgname }}</a>
       </li>
       
-      <span ng-show="(orgs.name | filter:searchText | orderBy: 'name').length - 9 > 0">
+      <span ng-show="(orgs | filter:searchText | orderBy: 'name').length - 9 > 0">
 	<li class="list-group-item">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
       </span>
       
