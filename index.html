@@ -17,7 +17,8 @@
     xhReq.open("GET", "manifest.webapp", false);
     xhReq.send(null);
     var serverResponse = JSON.parse(xhReq.responseText);
-    var dhisAPI = serverResponse.activities.dhis.href;
+    var dhisAPI =  'http://inf5750-13.uio.no/';
+    <!-- serverResponse.activities.dhis.href; --> 
 </script>
 <!-- <body style="padding-top: 80px;"> -->
 
@@ -72,20 +73,11 @@
 <!--<script type="text/javascript" src="http://cdn.jsdelivr.net/restangular/latest/restangular.js"></script>-->
 <!--<script type="text/javascript" src="js/restangular.js"></script>-->
 <!--<script type="text/javascript" src="js/restangular.min.js"></script>-->
-
-<!-- Scripts -->
-<script src="js/services/server.js"></script>
 <script src="js/app.js"></script>
 <script src="js/services.js"></script>
 
 
-
 <script src="js/controllers/controllers.js"></script>
-
-<script src="js/services/org-services.js"></script>
-
-<script src="js/controllers.js"></script>
-
 <script src="js/controllers/map_controller.js"></script>
 <script src="js/controllers/search_controller.js"></script>
 
@@ -93,11 +85,6 @@
 <script src="js/filters.js"></script>
 <script src="js/directives.js"></script>
 <script src="js/directives/draggable_marker_content.js"></script>
-
-
-
-<!-- Factories -->
-<script src="factories/server.js"></script>
 
 
 <script src="js/jquery-1.10.1.min.js"></script>

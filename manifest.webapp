@@ -1,20 +1,21 @@
 {
-    "version":"2.0",
-    "name":"Puffin Commando Squad",
-    "description":"DHIS2 Application for an organization unit search",
+    "version":"1.0",
+    "name":"Example Application",
+    "description":"Example application for DHIS2.",
     "icons":{
     "16":null,
         "48":"/img/icon-48.png",
         "128":"/img/icon.png"
 },
     "developer":{
-    "url":"http://play.dhis2.org/",
-        "name":"Puffin Commando Squad",
+    "url":"http://dhis2.org/",
+        "name":"Lars Kristian Roland",
         "company":"University of Oslo",
+        "email":"lars@roland.bz"
 },
     "activities":{
     "dhis":{
-        "href":"https://play.dhis2.org/demo/"
+        "href":"http://inf5750-13.uio.no/"
     }
 },
     "launchUrl":null,
