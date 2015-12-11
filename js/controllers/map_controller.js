@@ -44,7 +44,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $scope.user.coordinates = [$scope.location.lng, $scope.location.lat];
   };
 
-
   
   $scope.saveEditedOrgUnit = function(orgUnit) {
 
@@ -67,11 +66,31 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $scope.selectSearch();
   };
 
+  
+  $scope.createMarker = function(orgUnit) {
+    coordinates = JSON.parse(orgUnit.coordinates);
+    return {
+      lat: coordinates[1],
+      lng: coordinates[0],
+      type: 'marker',
+      id: orgUnit.id,
+      message:"Denne er fra serveren",
+      getMessageScope: function () {
+	return $scope;
+      },
+    }
+  };
+
   $scope.pushNewOrgUnit = function(id) { 
     var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + id;
     
     $http.get(url).success(function(data) {
       console.log(data);
+      if ($scope.markersAdded) {
+	$scope.markers.pop();
+	$scope.markersAdded = false;
+      }
+      $scope.markers.push($scope.createMarker(data));
     });
   };
 
@@ -81,6 +100,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
+      $scope.pushNewOrgUnit(data.response.lastImported);
       $timeout($scope.cancelEdit, 1500);
     }
   };
@@ -229,6 +249,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
 
   OrgunitsGeoService.get({ level: 4 }, function (data) {
+    console.log("DATA");
+    console.log(data);
     var features = data.features;
     console.log(features);
     features.forEach(function (entry) {
