@@ -29,7 +29,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
   // $http.defaults.headers.common['Content-Type'] = 'application/json';
 
-  $scope.geojson = {};
+  // $scope.geojson = {};
+  $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
 
