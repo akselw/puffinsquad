@@ -1,5 +1,9 @@
 var myApp = angular.module('myApp.controllers');
 
+myApp.config(function($logProvider){
+  $logProvider.debugEnabled(false);
+});
+
 myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
@@ -33,7 +37,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 	shortName: "",
 	openingDate: "",
 	parent: {code : "OU_255005"},
-	featureType: "POINT",
+	featureType: "Point",
+	active: true,
       };
     }
   }
@@ -99,8 +104,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
-  $scope.pushNewOrgUnit = function(id) { 
-    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + id;
+  $scope.pushNewOrgUnit = function(id) {
+    var url = dhisAPI + 'api/organisationUnits/' + id;
     
     $http.get(url).success(function(data) {
       console.log(data);
@@ -111,11 +116,11 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.httpSuccess = function(data) {
     console.log(data);
-    response = data.response.importCount;
+    response = data.importCount;
     console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
-      $scope.pushNewOrgUnit(data.response.lastImported);
+      $scope.pushNewOrgUnit(data.lastImported);
       $timeout($scope.cancelEdit, 1500);
     }
   };
@@ -126,7 +131,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
     $scope.master.coordinates = JSON.stringify($scope.master.coordinates);
 
-    var url= 'https://play.dhis2.org/demo/api/organisationUnits';
+    var url= dhisAPI + 'api/organisationUnits';
     
     $http.post(url, $scope.master).success(function(data) {
     }).success($scope.httpSuccess);
@@ -138,7 +143,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.getOrgUnit = function(userId) {
-    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + userId;
+    var url = dhisAPI + 'api/organisationUnits/' + userId;
     var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
     
     $http.get(url, config).success(function(data) {
