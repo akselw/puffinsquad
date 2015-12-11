@@ -33,6 +33,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
+  $scope.orgs = new Array(); // using orgs to fetch more information than just geodata.
 
 
   $scope.orgUnitsJSON = new Array();
@@ -204,8 +205,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
       console.log(data.coordinates);
       $scope.showEditPage(data);
-      // $scope.orgUnitsJSON[userId] = data;
-      // console.log($scope.orgUnitsJSON[userId]);
 
     }).error(function (data) {
       console.log("Error");
@@ -315,7 +314,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       var geometry = entry.geometry;
 
       if (geometry.type === 'Point')
-	
+	       
         $scope.markers.push({
           lat: geometry.coordinates[1],
           lng: geometry.coordinates[0],
@@ -331,16 +330,30 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       $scope.orgUnits[entry.properties.code] = entry;
       
     });
-    console.log( $scope.orgUnits["ke2gwHKHP3z"]);
+    // console.log( $scope.orgUnits["ke2gwHKHP3z"]);
   });
 
-  // console.log();
-  // 		    });
-  // });
 
-  OrgunitService.get({ id: 'qjboFI0irVu' }, function (data) {
-    console.log('Hei');
-    console.log(data);
+  /*  Added and renewed service for getting organisation-data */
+  OrgunitService.get(function (data) {
+
+    console.log(name);
+
+    var test = "";
+    var orgsdata = data.organisationUnits;
+    
+    orgsdata.forEach(function (entry) {
+
+      var name = entry.name;
+      var id = entry.id;
+      
+        $scope.orgs.push({
+
+          orgname: name,
+          orgid: id,
+
+        });
+      }); 
   });
 
 
@@ -671,6 +684,43 @@ Forrige som fungerte, har ikke testet med endring over
     };
   };
 
+  $scope.showMap = function(org) {
+
+    var coordinates = []; 
+    var lat;
+    var lng;
+    //coordinates = 
+
+    //fiterMarkers(org, $scope.markers);
+
+    lat = getLocationLt(org, $scope.markers);
+    lng = getLocationLg(org, $scope.markers); //= getLocationLg(org, $scope.markers);
+
+      latitude = lat.lat; //coordinates[0];
+      longitude= lng.lng; //coordinates[1];
+
+
+
+      console.log(lng.lng);
+      console.log(lat.lat);
+
+      $scope.center = {
+
+      lng: longitude,
+      lat: latitude,
+      zoom: 12,
+      };
+
+
+
+//    No point in setting a marker for something already here.
+  //  $scope.markers.push({
+  //    lat: latitude,
+  //    lng: longitude,
+      //message: "My Added Marker " + $scope.orgunits[0].name
+  //  });
+  };
+
   angular.extend($scope, {
     layers: {
       baselayers: {
@@ -729,4 +779,95 @@ function showError(error) {
     x.innerHTML = "An unknown error occurred."
     break;
   }
+}
+
+/*
+          lat: geometry.coordinates[1],
+          lng: geometry.coordinates[0],
+          type: 'marker',
+          id: entry.id,
+
+
+function filterMarkers(org, markers) {
+
+    angular.forEach(markers, function(item) {
+
+    // if one of the organisations in the API equals the organisations markers´ id
+      if (item.id !== org.orgid) {
+        /* Alternatively  removemarkers, then push this marker instead markers.push(item); */
+        //markers.pop(item);
+        
+        /*
+
+        $scope.markers.push({
+          lat: geometry.coordinates[1],
+          lng: geometry.coordinates[0],
+          type: 'marker',
+          id: entry.id,
+    
+    message: $scope.markerMessage(entry),
+    getMessageScope: function () {
+      return $scope;
+    },
+        });
+
+
+
+        
+
+      } 
+   } 
+}; 
+
+*/
+
+function getLocationLt(org, markers) {
+  
+  var coordinates = [];
+  var lat = 0;
+  coordinates = [];
+
+  console.log(org);
+
+  angular.forEach(markers, function(item) {
+
+    // if one of the organisations in the API equals the organisations markers´ id
+    if (item.id === org.orgid) {
+      
+      lat = item.lat;
+      
+    } 
+
+  });
+
+  return  {
+    lat
+    //coordinates
+  };
+}
+
+function getLocationLg(org, markers) {
+  
+  var coordinates = [];
+  var lng = 0;
+  var orgdata;
+  coordinates = [];
+
+  //console.log(org.orgid);
+
+  angular.forEach(markers, function(item) {
+
+    // if one of the organisations in the API equals the organisations markers´ id
+    if (item.id === org.orgid) {
+      orgdata = item; 
+      lng = item.lng;
+     
+    } 
+
+  });
+
+  return  {
+    lng
+    //coordinates
+  };
 }
