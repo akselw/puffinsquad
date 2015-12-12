@@ -46,17 +46,20 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
       level: level
     },
     {
-      
+      setLevel: function (l) {
+        level = l;
+      }
     }
   );
 });
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
   var unitId = '';
+  var level = 1;
   return $resource(
-    dhisAPI + 'api/organisationUnits/:id.json',
+    dhisAPI + 'api/organisationUnits.json?paging=false', //?paging=false', // organisationUnits.json?paging=false
     {
-      id: unitId
+      //id: unitId
     },
     {
 
