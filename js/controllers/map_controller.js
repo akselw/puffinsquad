@@ -5,15 +5,17 @@ myApp.config(function($logProvider){
   $logProvider.debugEnabled(false);
 });
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', 'OrgunitParentService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService, OrgunitParentService) {
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
+
 
   /* Variable declarations */
   $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
   $scope.orgs = new Array(); // using orgs to fetch more information than just geodata.
+  $scope.parents = new Array();
 
   $scope.orgUnitsJSON = new Array();
   $scope.editedOrgUnit = null;
@@ -27,16 +29,21 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 		  editorgtab: 'partials/edit-org-tab.html',
 		  savedtab: 'partials/saved.html'};
 
-
-  $scope.location = {lat: 0.602118, lng: 30.160217};
-
   $scope.organisationUnitLevels = new Array();
 
+  
+  $scope.location = {lng: -13.48297, lat: 8.36369};
+  
   $scope.current_pos = {
     lat: $scope.location.lat,
     lng: $scope.location.lng
   };
 
+  $scope.center = {
+    lat: 8.61904,
+    lng: -12.63290,
+    zoom: 9,
+  };
 
   // Load and sort the organisation unit levels
   OrganisationUnitLevels.get(function (data) {
@@ -70,6 +77,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.showEditPage = function(orgUnit) {
     $scope.user=orgUnit;
+    $scope.user.parent = {code: $scope.user.parent.code};
     $scope.subPage = 'editorgtab';
   };
 
@@ -111,26 +119,38 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
+  $scope.removeMarkerById = function(id) {
+    for (var i = 0; i < $scope.markers.length; i++)
+      if ($scope.markers[i].id && $scope.markers[i].id === id) { 
+        $scope.markers.splice(i, 1);
+        break;
+      }
+    $(".leaflet-popup-close-button")[0].click();
+  };
+
   $scope.httpSuccess = function(data) {
     console.log(data);
     response = data.importCount;
     console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
-      $scope.pushNewOrgUnit(data.lastImported);
       $timeout($scope.cancelEdit, 1500);
+      if (response['updated'] == 1) {
+	$scope.removeMarkerById(data.lastImported);
+      }
+      $scope.pushNewOrgUnit(data.lastImported);
     }
   };
 
   $scope.initNewOrgUnit = function() {
     if (!$scope.user || $scope.subPage == 'editorgtab') {
       $scope.user = {
-      	name: "",
-      	shortName: "",
-      	openingDate: "",
-      	parent: {code : "OU_255005"},
-      	featureType: "Point",
-      	active: true,
+	name: "",
+	shortName: "",
+	openingDate: "",
+	parent: {code : ""},
+	featureType: "Point",
+	active: true,
       };
     }
   };
@@ -147,9 +167,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
     var data = orgUnit;
     var url = orgUnit.href;
-    $http.put(url, data).success(function(data) {
-      console.log(data);
-    });
+    $http.put(url, data).success($scope.httpSuccess);
     $scope.user = null;
   };
 
@@ -182,6 +200,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
+  OrgunitParentService.get(function (data) {
+    $scope.parents = data.organisationUnits;
+    console.log(data);
+    console.log($scope.parents);
+
+  });
+  
   $scope.markerMessageJSON = function(orgUnit) {
     var actions = "";
     actions += '<button ng-click="selectEditOrg(\''
@@ -305,7 +330,10 @@ Drag this marker to the location on the map where you want to add your organizat
 
   /* When clicking the map */
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
+    
     var leafEvent = a.leafletEvent;
+    // console.log(leafEvent.originalEvent.timeStamp);
+    // console.log(n);
 
     $scope.markersAdded = true;
 

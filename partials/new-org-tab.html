@@ -29,18 +29,12 @@
   </div>
 
 
-  <!-- <div class="form-group"> -->
-  <!--   <label for="sel1">Belongs to set:</label> -->
-  <!--   <select class="form-control" id="sel1"> -->
-  <!--     <option >---------</option> -->
-  <!--     <option>Org unit set 1</option> -->
-  <!--     <option>Org unit set 2</option> -->
-  <!--     <option>Org unit set 3</option> -->
-  <!--     <option>Org unit set 4</option> -->
-  <!--     <option>Org unit set 5</option> -->
-  <!--     <option>Org unit set 6</option> -->
-  <!--   </select> -->
-  <!-- </div> -->
+  <div class="form-group">
+    <label for="parents">Parent:</label>
+    <select class="form-control" id="parents"  ng-model="user.parent.code">
+      <option ng-repeat="parent in p = (parents | orderBy: 'name')" value="{{parent.code}}">{{parent.name}}</option>
+    </select>
+  </div>
 
 
   <button ng-click="cancelEdit()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
