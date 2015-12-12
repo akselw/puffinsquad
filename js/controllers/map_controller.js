@@ -49,6 +49,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.showEditPage = function(orgUnit) {
     $scope.user=orgUnit;
+    $scope.user.parent = {code: $scope.user.parent.code};
     $scope.subPage = 'editorgtab';
   };
 
