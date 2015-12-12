@@ -230,16 +230,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   });
 
-
-  $(document).ready(function () {
-    $(document).on('mouseenter', '.divbutton', function () {
-      $(this).find(":button").show();
-    }).on('mouseleave', '.divbutton', function () {
-      $(this).find(":button").hide();
-    });
-  });
-
-
   $scope.addMarkers = function () {
     $scope.markers.push({
       lat: $scope.location.lat,
