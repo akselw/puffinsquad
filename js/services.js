@@ -54,7 +54,7 @@ myAppServices.factory('OrgunitsGeoService', function ($resource, $http) {
 });
 
 myAppServices.factory("OrgunitParentService", function ($resource, $http) {
-  return $resource(dhisAPI + 'api/organisationUnits.json?level=2');
+  return $resource(dhisAPI + 'api/organisationUnits.json?level=3');
 });
 
 
