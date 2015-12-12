@@ -31,9 +31,8 @@
 
   <div class="form-group">
     <label for="parents">Parent:</label>
-    <select class="form-control" id="parents">
-      <option >---------</option>
-      <option ng-repeat="parent in p = (parents | orderBy: 'name')">{{parent.name}}</option>
+    <select class="form-control" id="parents"  ng-model="user.parent.code">
+      <option ng-repeat="parent in p = (parents | orderBy: 'name')" value="{{parent.code}}">{{parent.name}}</option>
     </select>
   </div>
 
@@ -42,3 +41,5 @@
   
   <button ng-click="submitNew(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>
+
+<pre>user = {{user}}</pre>

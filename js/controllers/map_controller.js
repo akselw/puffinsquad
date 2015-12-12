@@ -120,7 +120,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 	name: "",
 	shortName: "",
 	openingDate: "",
-	parent: {code : "OU_255005"},
+	parent: {code : ""},
 	featureType: "Point",
 	active: true,
       };
