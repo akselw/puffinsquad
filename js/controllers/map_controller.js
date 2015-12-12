@@ -29,7 +29,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 		  savedtab: 'partials/saved.html'};
   
   
-  $scope.location = {lat: 0.602118, lng: 30.160217};
+  $scope.location = {lng: -13.48297, lat: 8.36369};
   
   $scope.current_pos = {
     lat: $scope.location.lat,
@@ -37,9 +37,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.center = {
-    lat: 0.577400,
-    lng: 30.201073,
-    zoom: 4
+    lat: 8.61904,
+    lng: -12.63290,
+    zoom: 9,
   };
 
 
