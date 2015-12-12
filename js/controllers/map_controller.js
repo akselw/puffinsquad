@@ -90,14 +90,26 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
+  $scope.removeMarkerById = function(id) {
+    for (var i = 0; i < $scope.markers.length; i++)
+      if ($scope.markers[i].id && $scope.markers[i].id === id) { 
+        $scope.markers.splice(i, 1);
+        break;
+      }
+    $(".leaflet-popup-close-button")[0].click();
+  };
+
   $scope.httpSuccess = function(data) {
     console.log(data);
     response = data.importCount;
     console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
-      $scope.pushNewOrgUnit(data.lastImported);
       $timeout($scope.cancelEdit, 1500);
+      if (response['updated'] == 1) {
+	$scope.removeMarkerById(data.lastImported);
+      }
+      $scope.pushNewOrgUnit(data.lastImported);
     }
   };
 
@@ -126,9 +138,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
     var data = orgUnit;
     var url = orgUnit.href;
-    $http.put(url, data).success(function(data) {
-      console.log(data);
-    });
+    $http.put(url, data).success($scope.httpSuccess);
     $scope.user = null;
   };
 
