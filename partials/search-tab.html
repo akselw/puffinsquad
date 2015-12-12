@@ -1,14 +1,12 @@
 <!-- <div ng-controller="SearchController"> -->
-<div class="form-group">
-<label for="sel1">Filter results:</label>
-<select class="form-control" id="sel1">
-  <option>Org unit</option>
-  <option>Org unit Group</option>
-  <option>Org unit Group Set</option>
-  <option>Org unit Level</option>
-</select>
+<div class="ui selection dropdown fluid">
+  <input type="hidden" name="organisation_unit_level">
+  <i class="dropdown icon"></i>
+  <div class="default text"></div>
+  <div class="menu">
+    <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}">{{ level.name }}</div>
+  </div>
 </div>
-
 <label class="control-label" for="search">Search:</label>
 <div class="form-group" id="search">
 <input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility" autofocus>

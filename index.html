@@ -41,6 +41,10 @@
   </div>
   <div class="container" ng-view></div>
 
+
+  <div class="container" ng-model="organisationUnitLevels" ng-repeat="level in organisationUnitLevels">
+    <p>{{ level.name }}</p>
+  </div>
   <div class="container">This app is based on the Angular Seed project and uses AngularJS. </div>
   <div class="container">Click on "Search organization units to find an organization.</div>
 
@@ -85,6 +89,7 @@
   <script src="js/directives.js"></script>
   <script src="js/directives/draggable_marker_content.js"></script>
   <script src="js/directives/orgunit_marker_msg.js"></script>
+  <script src="js/directives/organisation_unit_level_selector.js"></script>
 
 
   <script src="js/jquery-1.10.1.min.js"></script>

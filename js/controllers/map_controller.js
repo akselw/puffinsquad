@@ -45,40 +45,32 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
 
 
-
-
-  // Call this function to initiate all the required startup data-structures
-  $scope.init = function () {
-    // Load and sort the organisation unit levels
-    OrganisationUnitLevels.get(function (data) {
-      data.organisationUnitLevels.forEach(function (entry) {
-        OrganisationUnitLevels.get({ id: entry.id}, function (level) {
-          $scope.organisationUnitLevels.push({
-            id: level.id,
-            name: level.displayName,
-            level: level.level
-          });
-
-          $scope.organisationUnitLevels.sort(function (a, b) {
-            if (a.level < b.level)
-              return -1;
-            if (a.level > b.level)
-              return 1;
-            else
-              return 0;
-          });
+  // Load and sort the organisation unit levels
+  OrganisationUnitLevels.get(function (data) {
+    data.organisationUnitLevels.forEach(function (entry) {
+      OrganisationUnitLevels.get({ id: entry.id}, function (level) {
+        $scope.organisationUnitLevels.push({
+          id: level.id,
+          name: level.displayName,
+          level: level.level
         });
+
+        $scope.organisationUnitLevels.sort(function (a, b) {
+          if (a.level < b.level)
+            return -1;
+          if (a.level > b.level)
+            return 1;
+          else
+            return 0;
+        });
+        console.log(level);
       });
-    }, function (error) {
-      console.log(error);
     });
 
-
-
-  };
-
-  $scope.init();
-
+      $('.ui.dropdown').dropdown();
+  }, function (error) {
+    console.log(error);
+  });
 
 
 
