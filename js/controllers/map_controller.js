@@ -30,6 +30,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.location = {lat: 0.602118, lng: 30.160217};
 
+  $scope.organisationUnitLevels = new Array();
+
   $scope.current_pos = {
     lat: $scope.location.lat,
     lng: $scope.location.lng
@@ -47,10 +49,35 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   // Call this function to initiate all the required startup data-structures
   $scope.init = function () {
-    
+    // Load and sort the organisation unit levels
+    OrganisationUnitLevels.get(function (data) {
+      data.organisationUnitLevels.forEach(function (entry) {
+        OrganisationUnitLevels.get({ id: entry.id}, function (level) {
+          $scope.organisationUnitLevels.push({
+            id: level.id,
+            name: level.displayName,
+            level: level.level
+          });
+
+          $scope.organisationUnitLevels.sort(function (a, b) {
+            if (a.level < b.level)
+              return -1;
+            if (a.level > b.level)
+              return 1;
+            else
+              return 0;
+          });
+        });
+      });
+    }, function (error) {
+      console.log(error);
+    });
+
+
+
   };
 
-
+  $scope.init();
 
 
 
@@ -198,6 +225,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       dashArray: 3,
       fillOpacity: 0.8
     };
+    console.log($scope.organisationUnitLevels);
   }, function (error) {
     console.log(error);
   });

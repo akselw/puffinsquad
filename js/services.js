@@ -67,6 +67,18 @@ myAppServices.factory("OrgunitService", function ($resource, $http) {
   );
 });
 
+myAppServices.factory('OrganisationUnitLevels', function ($resource) {
+  return $resource(
+    dhisAPI + 'api/organisationUnitLevels/:id.json',
+    {
+
+    },
+    {
+
+    }
+  );
+});
+
 
 
 myAppServices.factory("UserSettingService", function ($resource) {
