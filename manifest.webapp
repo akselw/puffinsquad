@@ -1,6 +1,6 @@
 {
     "version":"1.0",
-    "name":"Example Application",
+    "name":"Puffinsquad",
     "description":"Example application for DHIS2.",
     "icons":{
     "16":null,
@@ -15,7 +15,7 @@
 },
     "activities":{
     "dhis":{
-        "href":"http://inf5750-13.uio.no/"
+        "href":"inf5750-13.uio.no/"
     }
 },
     "launchUrl":null,

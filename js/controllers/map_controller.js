@@ -1,6 +1,10 @@
 var myApp = angular.module('myApp.controllers');
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, OrgunitsGeoService, OrgunitService) {
+myApp.config(function($logProvider){
+  $logProvider.debugEnabled(false);
+});
+
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService) {
   $scope.location = {lat: 0.602118, lng: 30.160217};
   $scope.current_pos = {
     lat: $scope.location.lat,
@@ -23,8 +27,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   ';
 
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
+  // $http.defaults.headers.common['Content-Type'] = 'application/json';
 
-  $scope.geojson = {};
+  // $scope.geojson = {};
+  $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
 
@@ -32,29 +38,59 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $scope.orgUnitsJSON = new Array();
   $scope.editedOrgUnit = null;
 
-  OrgunitsGeoService.get({ level: 4 }, function (data) {
-    console.log('Yo');
-    var features = data.features;
-    console.log(features);
-    features.forEach(function (entry) {
-      var geometry = entry.geometry;
+  $scope.initNewOrgUnit = function() {
+    if (!$scope.user || $scope.subPage == 'editorgtab') {
+      $scope.user = {
+	name: "",
+	shortName: "",
+	openingDate: "",
+	parent: {code : "OU_255005"},
+	featureType: "Point",
+	active: true,
+      };
+    }
+  }
 
-      if (geometry.type === 'Point')
-        $scope.markers.push({
-          lat: geometry.coordinates[1],
-          lng: geometry.coordinates[0],
-          type: 'marker',
-          id: entry.id,
-          message: "hello",
-          getMessageScope: function () {
-            return $scope;
-          },
-        });
+  $scope.popMarker = function() {
+    if ($scope.markersAdded) {
+      $scope.markers.pop()
+      $scope.markersAdded = false;
+    }
+  };
+  
+  $scope.updateUserLocation = function() {
+    if (!$scope.user || $scope.subPage == 'editorgtab') {
+      $scope.selectNewOrg();
+    };
+    $scope.user.coordinates = [$scope.location.lng, $scope.location.lat];
+  };
 
-      $scope.orgUnits[entry.properties.code] = entry;
-    });
-    console.log( $scope.orgUnits["ke2gwHKHP3z"]);
-  });
+  
+  // $scope.saveEditedOrgUnit = function(orgUnit) {
+
+  // OrgunitsGeoService.get({ level: 4 }, function (data) {
+  //   console.log('Yo');
+  //   var features = data.features;
+  //   console.log(features);
+  //   features.forEach(function (entry) {
+  //     var geometry = entry.geometry;
+
+  //     if (geometry.type === 'Point')
+  //       $scope.markers.push({
+  //         lat: geometry.coordinates[1],
+  //         lng: geometry.coordinates[0],
+  //         type: 'marker',
+  //         id: entry.id,
+  //         message: "hello",
+  //         getMessageScope: function () {
+  //           return $scope;
+  //         },
+  //       });
+
+  //     $scope.orgUnits[entry.properties.code] = entry;
+  //   });
+  //   console.log( $scope.orgUnits["ke2gwHKHP3z"]);
+  // });
 
   $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
     console.log('Hello');
@@ -74,33 +110,83 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   $scope.saveOrgUnit = function(orgUnit) {
     // console.log(JSON.stringify(orgUnit.coordinates));
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
+    console.log(JSON.stringify(orgUnit));
 
-    // var url = 'https://play.dhis2.org/demo/api/organisationUnits';
     var data = orgUnit;
 
     var url = orgUnit.href;
+    
     // var data = {name: orgUnit.name, openingDate: orgUnit.OpeningDate};
 
     $http.put(url, data).success(function(data) {
       console.log(data);
     });
+    $scope.user = null;
   };
 
+  $scope.cancelEdit = function() {
+    console.log("Cancel");
+    $scope.user = null;
+    $scope.popMarker();
+    $scope.selectSearch();
+  };
+
+  $scope.markerMessageJSON = function(orgUnit) {
+    var actions = "";
+    
+    actions += '<button ng-click="selectEditOrg(\'' + orgUnit.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
+    
+    var message = '<h4>' + orgUnit.name + '</h4>'  + '<br>' + actions;
+    
+    return message;
+  };
+  
+  $scope.createMarker = function(orgUnit) {
+    coordinates = JSON.parse(orgUnit.coordinates);
+    return {
+      lat: coordinates[1],
+      lng: coordinates[0],
+      type: 'marker',
+      id: orgUnit.id,
+      message: $scope.markerMessageJSON(orgUnit),
+      getMessageScope: function () {
+	return $scope;
+      },
+    }
+  };
+
+  $scope.pushNewOrgUnit = function(id) {
+    var url = dhisAPI + 'api/organisationUnits/' + id;
+    
+    $http.get(url).success(function(data) {
+      console.log(data);
+      $scope.popMarker();
+      $scope.markers.push($scope.createMarker(data));
+    });
+  };
+
+  $scope.httpSuccess = function(data) {
+    console.log(data);
+    response = data.importCount;
+    console.log(response);
+    if (response['imported'] == 1 || response['updated'] == 1) {
+      $scope.subPage = 'savedtab';
+      $scope.pushNewOrgUnit(data.lastImported);
+      $timeout($scope.cancelEdit, 1500);
+    }
+  };
+  
 
 
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
 
-    $scope.master.openingDate = "2015-12-04";
-    $scope.master.coordinates = "[" + $scope.location.lng  + ", " + $scope.location.lat + "]";
+    $scope.master.coordinates = JSON.stringify($scope.master.coordinates);
 
-    var config = {headers:
-		  {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
-		  // {'Authorization': 'Basic KGFkbWluOmRpc3RyaWN0KQ=='}};
-    $http.post('https://play.dhis2.org/demo/api/organisationUnits', $scope.master, config).success(function
-							      (data) {
-							      })
-    console.log($scope.master);
+    var url= dhisAPI + 'api/organisationUnits';
+    
+    $http.post(url, $scope.master).success(function(data) {
+    }).success($scope.httpSuccess);
   };
 
   $scope.showEditPage = function(orgUnit) {
@@ -109,7 +195,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   };
 
   $scope.getOrgUnit = function(userId) {
-    var url = 'https://play.dhis2.org/demo/api/organisationUnits' + '/' + userId;
+    var url = dhisAPI + 'api/organisationUnits/' + userId;
     var config = {headers: {'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q='}};
 
     $http.get(url, config).success(function(data) {
@@ -211,13 +297,52 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     // 	  dataSets + '<br>' + programs + '<br>' + actions;
 
     var actions = "";
-
-    actions += '<button ng-click="selectEditOrg(\'' + entry.properties.code +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
-
+    
+    actions += '<button ng-click="selectEditOrg(\'' + entry.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
+    
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
 
     return message;
   }
+
+
+  OrgunitsGeoService.get({ level: 4 }, function (data) {
+    console.log("DATA");
+    console.log(data);
+    var features = data.features;
+    console.log(features);
+    features.forEach(function (entry) {
+      var geometry = entry.geometry;
+
+      if (geometry.type === 'Point')
+	
+        $scope.markers.push({
+          lat: geometry.coordinates[1],
+          lng: geometry.coordinates[0],
+          type: 'marker',
+          id: entry.id,
+	  
+	  message: $scope.markerMessage(entry),
+	  getMessageScope: function () {
+	    return $scope;
+	  },
+        });
+      
+      $scope.orgUnits[entry.properties.code] = entry;
+      
+    });
+    console.log( $scope.orgUnits["ke2gwHKHP3z"]);
+  });
+
+  // console.log();
+  // 		    });
+  // });
+
+  OrgunitService.get({ id: 'qjboFI0irVu' }, function (data) {
+    console.log('Hei');
+    console.log(data);
+  });
+
 
 
   $(document).ready(function () {
@@ -244,6 +369,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('New');
+    $scope.initNewOrgUnit();
     $scope.subPage = 'neworgtab';
   };
 
@@ -254,20 +380,30 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
     $scope.subPage = 'searchtab';
   };
 
-  $scope.selectEditOrg = function (orgUnitCode) {
-
+  $scope.selectEditOrg = function (orgUnitId) {
+	
     // $scope.edited = $scope.orgunit;
     // console.log($scope.edited.name);
     $('#search-tab').removeClass("active");
     $('#new-tab').addClass("active");
     $('#new-tab-link').html('Edit');
+
+    
+
+    $scope.getOrgUnit(orgUnitId);
+/**
+Forrige som fungerte, har ikke testet med endring over
+    // $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
+    // $scope.getOrgUnit($scope.editedOrgUnit.id);
+**/
+
+
+    
     // console.log($scope.orgUnits[orgUnitCode]);
-    $scope.editedOrgUnit = $scope.orgUnits[orgUnitCode];
 
 
     // console.log("orgUnit returned");
-    $scope.getOrgUnit($scope.editedOrgUnit.id);
-
+    
     // // console.log($scope.editedOrgUnit);
     // // console.log($scope.editedOrgUnit.properties);
     // // console.log($scope.editedOrgUnit.properties.name);
@@ -307,6 +443,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
   });
 
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
+    var leafEvent = a.leafletEvent;
+
+    // $scope.location.lng = leafEvent.latlng.lng;
+    // $scope.location.lat = leafEvent.latlng.lat;
+    // $scope.popMarker();
+    $scope.markersAdded = true;
+
     // Remove the existing movable markers
     $scope.excludeMarkersOfType('movable_marker');
 
@@ -322,6 +465,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
       draggable: true
     });
     $scope.selectNewOrg();
+    $scope.updateUserLocation();
   });
 
   $scope.excludeMarkersOfType = function (type) {
@@ -468,7 +612,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', 'Or
 
   $scope.pages = { searchtab: 'partials/search-tab.html',
 		   neworgtab: 'partials/new-org-tab.html',
-		   editorgtab: 'partials/edit-org-tab.html',};
+		   editorgtab: 'partials/edit-org-tab.html',
+		   savedtab: 'partials/saved.html',};
 
   $scope.removeOsmLayer = function () {
     delete this.layers.baselayers.osm;
