@@ -4,7 +4,7 @@ myApp.config(function($logProvider){
   $logProvider.debugEnabled(false);
 });
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', 'OrgunitParentService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService, OrgunitParentService) {
 
 
   /* Variable declarations */
@@ -15,6 +15,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
   $scope.orgs = new Array(); // using orgs to fetch more information than just geodata.
+  $scope.parents = new Array();
 
   $scope.orgUnitsJSON = new Array();
   $scope.editedOrgUnit = null;
@@ -172,6 +173,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
+  OrgunitParentService.get(function (data) {
+    $scope.parents = data.organisationUnits;
+    console.log(data);
+    console.log($scope.parents);
+
+  });
+
   
   $scope.markerMessageJSON = function(orgUnit) {
     var actions = "";
@@ -315,7 +323,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   });
 
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
+    
     var leafEvent = a.leafletEvent;
+    // console.log(leafEvent.originalEvent.timeStamp);
+    // console.log(n);
 
     // $scope.location.lng = leafEvent.latlng.lng;
     // $scope.location.lat = leafEvent.latlng.lat;
