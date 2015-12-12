@@ -31,75 +31,66 @@
         </button>
         <a class="navbar-brand" href="/">Managing Organisation units</a>
       </div>
-      <!-- <div class="navbar-collapse collapse"> -->
-      <!--   <ul class="nav navbar-nav"> -->
-      <!--     <li><a href="#/view3">A map</a></li> -->
-      <!--     <li><a href="#/view4">Search organization units</a></li> -->
-      <!--   </ul> -->
-      <!-- </div> -->
     </div>
-    <div class="container" ng-view></div>
+  </div>
+  <div class="container" ng-view></div>
 
 
-    <div class="container" ng-model="organisationUnitLevels" ng-repeat="level in organisationUnitLevels">
-      <p>{{ level.name }}</p>
-    </div>
+  <div class="container" ng-model="organisationUnitLevels" ng-repeat="level in organisationUnitLevels">
+    <p>{{ level.name }}</p>
+  </div>
 
-    <!-- In production use:
-	 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	 -->
+  <!-- In production use:
+       <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+       -->
 
-    <script src="lib/angular/angular.js"></script>
-    <script src="lib/angular/angular-route.js"></script>
-    <script src="lib/angular/angular-resource.js"></script>
+  <script src="lib/angular/angular.js"></script>
+  <script src="lib/angular/angular-route.js"></script>
+  <script src="lib/angular/angular-resource.js"></script>
 
-    <script src="node_modules/angular-cookies/angular-cookies.min.js"></script>
-    <script src="node_modules/angular-oauth2/dist/angular-oauth2.min.js"></script>
-
-
-    <script src="bower_components/angular-base64-codec/dist/angular-base64-codec.min.js"></script>
-    <script src="bower_components/angular-basic-auth/dist/angular-basic-auth.min.js"></script>
-
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-    <script src="js/angular-leaflet-directive.min.js"></script>
-
-    <!--<script type="text/javascript" src="http://cdn.jsdelivr.net/lodash/2.1.0/lodash.compat.min.js"></script>-->
-    <!--<script type="text/javascript" src="http://cdn.jsdelivr.net/restangular/latest/restangular.js"></script>-->
-    <!--<script type="text/javascript" src="js/restangular.js"></script>-->
-    <!--<script type="text/javascript" src="js/restangular.min.js"></script>-->
-    <script src="js/app.js"></script>
-    <script src="js/services.js"></script>
-    <script src="js/services/orgunit_levels.js"></script>
+  <script src="node_modules/angular-cookies/angular-cookies.min.js"></script>
+  <script src="node_modules/angular-oauth2/dist/angular-oauth2.min.js"></script>
 
 
-    <script src="js/controllers/controllers.js"></script>
-    <script src="js/controllers/map_controller.js"></script>
-    <script src="js/controllers/search_controller.js"></script>
+  <script src="bower_components/angular-base64-codec/dist/angular-base64-codec.min.js"></script>
+  <script src="bower_components/angular-basic-auth/dist/angular-basic-auth.min.js"></script>
+
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+  <script src="js/angular-leaflet-directive.min.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/services/orgunit_levels.js"></script>
 
 
-    <script src="js/filters.js"></script>
-    <script src="js/directives.js"></script>
-    <script src="js/directives/draggable_marker_content.js"></script>
-    <script src="js/directives/orgunit_marker_msg.js"></script>
-    <script src="js/directives/organisation_unit_level_selector.js"></script>
+  <script src="js/controllers/controllers.js"></script>
+  <script src="js/controllers/map_controller.js"></script>
+  <script src="js/controllers/search_controller.js"></script>
 
 
-    <script src="js/jquery-1.10.1.min.js"></script>
-    <script src="js/jquery-migrate-1.2.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/directives.js"></script>
+  <script src="js/directives/draggable_marker_content.js"></script>
+  <script src="js/directives/orgunit_marker_msg.js"></script>
+  <script src="js/directives/organisation_unit_level_selector.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
 
-    <script>
-      $(function () {
-      $(document).ready(function () {
-      $(document).on('mouseenter', '.divbutton', function () {
-      $(this).find(":button").show();
-      }).on('mouseleave', '.divbutton', function () {
-      $(this).find(":button").hide();
-      });
-      });
-      });
-    </script>
-  </body>
+  <script src="js/jquery-1.10.1.min.js"></script>
+  <script src="js/jquery-migrate-1.2.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
+
+  <script>
+    $(function () {
+    $(document).ready(function () {
+    $(document).on('mouseenter', '.divbutton', function () {
+    $(this).find(":button").show();
+    }).on('mouseleave', '.divbutton', function () {
+    $(this).find(":button").hide();
+    });
+    });
+    });
+  </script>
+</body>
 </html>
