@@ -19,16 +19,8 @@
     //var dhisAPI = serverResponse.activities.dhis.href;
     // Dette er en meningsløs kommentar
     var dhisAPI = 'http://inf5750-13.uio.no/';
-
-    $(document).ready(function () {
-      $(document).on('mouseenter', '.divbutton', function () {
-        $(this).find(":button").show();
-      }).on('mouseleave', '.divbutton', function () {
-        $(this).find(":button").hide();
-      });
-    });
   </script>
-  <body style="padding-top: 80px;">
+  <body>
   <div class="navbar navbar-default navbar-static-top">
     <div class="container">
       <div class="navbar-header">
@@ -99,5 +91,17 @@
   <script src="js/bootstrap.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
+
+  <script>
+  $(function () {
+    $(document).ready(function () {
+      $(document).on('mouseenter', '.divbutton', function () {
+        $(this).find(":button").show();
+      }).on('mouseleave', '.divbutton', function () {
+        $(this).find(":button").hide();
+      });
+    });
+  });
+  </script>
 </body>
 </html>

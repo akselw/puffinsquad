@@ -1,0 +1,8 @@
+<div class="ui selection dropdown">
+  <input type="hidden" name="organisation_unit_level">
+  <i class="dropdown icon"></i>
+  <div class="default text"></div>
+  <div class="menu" ng-repeat="level in organisation_levels">
+    <div class="item" data-value="{{ level.id }}">{{ level.name }}</div>
+  </div>
+</div>

@@ -5,7 +5,7 @@ myApp.config(function($logProvider){
   $logProvider.debugEnabled(false);
 });
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService) {
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
@@ -40,6 +40,19 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     lng: 30.201073,
     zoom: 4
   };
+
+
+
+
+
+  // Call this function to initiate all the required startup data-structures
+  $scope.init = function () {
+    
+  };
+
+
+
+
 
 
 
@@ -411,6 +424,48 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       x.innerHTML = "An unknown error occurred."
       break;
     }
+  };
+
+  $scope.getLocationLt = function (org) {
+
+    var coordinates = [];
+    var lat = 0;
+    coordinates = [];
+
+    console.log(org);
+
+    angular.forEach($scope.markers, function(item) {
+
+      // if one of the organisations in the API equals the organisations markers´ id
+      if (item.id === org.orgid) {
+
+	lat = item.lat;
+
+      }
+
+    });
+
+    return lat;
+  };
+
+  $scope.getLocationLg = function (org) {
+    var coordinates = [];
+    var lng = 0;
+    var orgdata;
+    coordinates = [];
+
+    angular.forEach($scope.markers, function(item) {
+
+      // if one of the organisations in the API equals the organisations markers´ id
+      if (item.id === org.orgid) {
+	orgdata = item;
+	lng = item.lng;
+
+      }
+
+    });
+
+    return lng;
   };
 
   $scope.markerMessage = function(entry) {
