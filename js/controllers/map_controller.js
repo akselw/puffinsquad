@@ -61,7 +61,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $scope.orgs.forEach(function (entry) {
       if (entry.level === level) {
         $scope.orgsByLevel.push(entry);
-        console.log(entry);
       }
     });
   }
@@ -71,7 +70,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
     OrgunitService.get({ level: level }, function (data) {
       data.organisationUnits.forEach(function (entry) {
-        console.log(entry);
         $scope.orgs.push({
           orgname: entry.name,
           orgid: entry.id,
@@ -157,7 +155,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.pushNewOrgUnit = function(id) {
     var url = dhisAPI + 'api/organisationUnits/' + id;
     $http.get(url).success(function(data) {
-      console.log(data);
       $scope.popMarker();
       $scope.markers.push($scope.createMarker(data));
     });
@@ -173,9 +170,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.httpSuccess = function(data) {
-    console.log(data);
     response = data.importCount;
-    console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
       $timeout($scope.cancelEdit, 1500);
@@ -218,12 +213,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.getOrgUnit = function(userId) {
     var url = dhisAPI + 'api/organisationUnits/' + userId;
     $http.get(url).success(function(data) {
-      console.log(data);
       data.coordinates = angular.fromJson(data.coordinates);
-
-      console.log(data.coordinates);
       $scope.showEditPage(data);
-
     }).error(function (data) {
       console.log("Error");
       $scope.showEditErrorPage();
@@ -425,8 +416,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
       var unit = data;
       var coords = $.parseJSON(unit.coordinates);
-
-      console.log(unit.id);
 
       if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
         $scope.geojson = {
