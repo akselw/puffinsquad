@@ -8,6 +8,7 @@
       <i class="dropdown icon"></i>
       <div class="default text">Choose a level</div>
       <div class="menu">
+        <div class="item" data-value="0" ng-click="setLevel(0)">All Levels</div>
         <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</div>
       </div>
     </div>
@@ -29,12 +30,9 @@
           <li class="list-group-item" style="font-weight: bold; border-top-left-radius: 0; border-top-right-radius: 0;">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
         </span>
       </span>
-      <span ng-hide="(orgs | filter:searchText | orderBy: 'name').length > 0" ng-show="(orgsByLevel | filter:searchText | orderBy: 'name').length == 0">
+      <span ng-hide="(orgs | filter:searchText | orderBy: 'name').length > 0" ng-show="level > 0 && (orgsByLevel | filter:searchText | orderBy: 'name').length == 0">
         <p class="text-center"><b>No result for '{{ searchText }}'<b><p>
       </span>
     </div>
   </span>
 </div> <!-- form-group -->
-<script>
-  $('.ui.dropdown').dropdown();
-</script>
