@@ -67,11 +67,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   }
 
   $scope.setOrgs = function (level) {
-    $('#search').find('.ui.dimmer').addClass('active');
-
     OrgunitService.get({ level: level }, function (data) {
       data.organisationUnits.forEach(function (entry) {
-        console.log(entry);
         $scope.orgs.push({
           orgname: entry.name,
           orgid: entry.id,
@@ -79,13 +76,11 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
         });
       });
     });
-    $('#search').find('.ui.dimmer').removeClass('active');
   };
 
   $scope.init = function () {
     // Load and sort the organisation unit levels
     OrganisationUnitLevels.get(function (data) {
-      //$('#search').find('.ui.dimmer').addClass('active');
       data.organisationUnitLevels.forEach(function (entry) {
         OrganisationUnitLevels.get({ id: entry.id}, function (level) {
           $scope.setOrgs(level.level);
@@ -104,10 +99,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
             else
               return 0;
           });
-          $('.ui.dropdown').dropdown();
         });
-        // $('#search').find('.ui.dimmer').removeClass('active');
       });
+      $('#search').find('.ui.dimmer').removeClass('active');
     }, function (error) {
       console.log(error);
     });
@@ -136,8 +130,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $('#search-tab').addClass("active");
     $('#new-tab-link').html('New');
     $scope.subPage = 'searchtab';
-
-    $('.ui.dropdown').dropdown();
   };
 
   $scope.selectEditOrg = function (orgUnitId) {

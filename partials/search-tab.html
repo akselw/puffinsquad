@@ -1,17 +1,12 @@
 <div id="search" class="ui form equal width">
   <div class="ui inverted dimmer">
-    <div class="ui text loader" id="loader-text">Loading data...</div>
+    <div class="ui active text loader" id="loader-text">Loading data...</div>
   </div>
   <div class="field">
-    <div class="ui selection dropdown fluid">
-      <input type="hidden" name="organisation_unit_level">
-      <i class="dropdown icon"></i>
-      <div class="default text">Choose a level</div>
-      <div class="menu">
-        <div class="item" data-value="0" ng-click="setLevel(0)">All Levels</div>
-        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</div>
-      </div>
-    </div>
+    <select class="ui selection dropdown fluid">
+      <option value="0" ng-click="setLevel(0)">All Levels</option>
+      <option ng-repeat="level in organisationUnitLevels" value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</option>
+    </select>
   </div>
   <div class="field">
     <input type="search" ng-model="searchText" placeholder="Search for facility" autofocus>
@@ -36,8 +31,3 @@
     </div>
   </span>
 </div> <!-- form-group -->
-<script>
-  $(document).ready(function () {
-    $('.ui.dropdown').dropdown();
-  });
-</script>
