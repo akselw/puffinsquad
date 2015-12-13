@@ -141,6 +141,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $('#search-tab').addClass("active");
     $('#new-tab-link').html('New');
     $scope.subPage = 'searchtab';
+
+    $('.ui.dropdown').dropdown();
   };
 
   $scope.selectEditOrg = function (orgUnitId) {
@@ -573,7 +575,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.showMap = function(org) {
-
     var coordinates = $scope.getLocation(org);
   };
 
