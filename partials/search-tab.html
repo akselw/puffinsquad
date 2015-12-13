@@ -1,4 +1,3 @@
-<!-- <div ng-controller="SearchController"> -->
 <div id="search" class="ui form equal width">
   <div class="ui inverted dimmer">
     <div class="ui text loader" id="loader-text">Loading data...</div>
@@ -9,7 +8,7 @@
       <i class="dropdown icon"></i>
       <div class="default text">Choose a level</div>
       <div class="menu">
-        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</div>
+        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setOrgs({{ level.level }})">{{ level.name }}</div>
       </div>
     </div>
   </div>
@@ -25,4 +24,6 @@
     </div>
   </span>
 </div> <!-- form-group -->
-<!-- </div> -->
+<script>
+  $('.ui.dropdown').dropdown();
+</script>

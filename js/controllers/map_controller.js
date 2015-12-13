@@ -5,15 +5,17 @@ myApp.config(function($logProvider){
   $logProvider.debugEnabled(false);
 });
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', 'OrgunitParentService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService, OrgunitParentService) {
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
+
 
   /* Variable declarations */
   $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
   $scope.orgs = new Array(); // using orgs to fetch more information than just geodata.
+  $scope.parents = new Array();
 
   $scope.orgUnitsJSON = new Array();
   $scope.editedOrgUnit = null;
@@ -27,10 +29,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 		  editorgtab: 'partials/edit-org-tab.html',
 		  savedtab: 'partials/saved.html'};
 
-
-  $scope.location = {lat: 0.602118, lng: 30.160217};
-
   $scope.organisationUnitLevels = new Array();
+
+
+  $scope.location = {lng: -13.48297, lat: 8.36369};
 
   $scope.current_pos = {
     lat: $scope.location.lat,
@@ -38,9 +40,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.center = {
-    lat: 0.577400,
-    lng: 30.201073,
-    zoom: 4
+    lat: 8.61904,
+    lng: -12.63290,
+    zoom: 9,
   };
 
   $scope.level = 0;
@@ -72,7 +74,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     OrganisationUnitLevels.get(function (data) {
       data.organisationUnitLevels.forEach(function (entry) {
         OrganisationUnitLevels.get({ id: entry.id}, function (level) {
-          $scope.setOrgs(level.level);
 
           $scope.organisationUnitLevels.push({
             id: level.id,
@@ -99,12 +100,11 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.init();
 
 
-
-
   /*  GUI code  */
 
   $scope.showEditPage = function(orgUnit) {
     $scope.user=orgUnit;
+    $scope.user.parent = {code: $scope.user.parent.code};
     $scope.subPage = 'editorgtab';
   };
 
@@ -146,14 +146,26 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
+  $scope.removeMarkerById = function(id) {
+    for (var i = 0; i < $scope.markers.length; i++)
+      if ($scope.markers[i].id && $scope.markers[i].id === id) {
+        $scope.markers.splice(i, 1);
+        break;
+      }
+    $(".leaflet-popup-close-button")[0].click();
+  };
+
   $scope.httpSuccess = function(data) {
     console.log(data);
     response = data.importCount;
     console.log(response);
     if (response['imported'] == 1 || response['updated'] == 1) {
       $scope.subPage = 'savedtab';
-      $scope.pushNewOrgUnit(data.lastImported);
       $timeout($scope.cancelEdit, 1500);
+      if (response['updated'] == 1) {
+	$scope.removeMarkerById(data.lastImported);
+      }
+      $scope.pushNewOrgUnit(data.lastImported);
     }
   };
 
@@ -163,12 +175,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       	name: "",
       	shortName: "",
       	openingDate: "",
-      	parent: {code : "OU_255005"},
+      	parent: {code : ""},
       	featureType: "Point",
       	active: true,
       };
     }
-  }
+  };
 
   $scope.submitNew = function(user) {
     $scope.master = angular.copy(user);
@@ -182,15 +194,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     orgUnit.coordinates = JSON.stringify(orgUnit.coordinates);
     var data = orgUnit;
     var url = orgUnit.href;
-    $http.put(url, data).success(function(data) {
-      console.log(data);
-    });
+    $http.put(url, data).success($scope.httpSuccess);
     $scope.user = null;
   };
 
   $scope.getOrgUnit = function(userId) {
     var url = dhisAPI + 'api/organisationUnits/' + userId;
-
     $http.get(url).success(function(data) {
       console.log(data);
       data.coordinates = angular.fromJson(data.coordinates);
@@ -218,6 +227,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
+  OrgunitParentService.get(function (data) {
+    $scope.parents = data.organisationUnits;
+    console.log(data);
+    console.log($scope.parents);
+
+  });
 
   $scope.markerMessageJSON = function(orgUnit) {
     var actions = "";
@@ -227,7 +242,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     var message = '<h4>' + orgUnit.name + '</h4>'  + '<br>' + actions;
     return message;
   };
-
 
 
   /* Map code */
@@ -243,7 +257,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       dashArray: 3,
       fillOpacity: 0.8
     };
-    console.log($scope.organisationUnitLevels);
   }, function (error) {
     console.log(error);
   });
@@ -260,9 +273,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
           type: 'marker',
           id: entry.id,
           message: $scope.markerMessage(entry),
-	        getMessageScope: function () {
-	           return $scope;
-	        },
+      	  getMessageScope: function () {
+      	    return $scope;
+      	  },
         });
 
       $scope.orgUnits[entry.properties.code] = entry;
@@ -281,7 +294,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       var id = entry.id;
 
       $scope.orgs.push({
-
         orgname: name,
         orgid: id,
 
@@ -298,7 +310,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
-
   $scope.showOnMap = function () {
     console.log("Finding current position with GeoLocation . . . ");
 
@@ -309,7 +320,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
-
   $scope.showPosition = function (position) {
     $scope.center = {
       lng: position.coords.longitude,
@@ -318,9 +328,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     };
   };
 
-    $scope.new_marker_msg = ' \
+  $scope.new_marker_msg = ' \
     <p class="lead"> \
-  	 Drag this marker to the location on the map where you want to add your organization unit. \
+      Drag this marker to the location on the map where you want to add your organization unit. \
     </p> \
     <div class="row text-center"> \
       <button type="button" ng-click="selectNewOrg()" class="btn btn-success btn-lg">Create new orgunit</button> \
@@ -346,12 +356,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     console.log(a);
   });
 
+  /* When clicking the map */
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
-    var leafEvent = a.leafletEvent;
 
-    // $scope.location.lng = leafEvent.latlng.lng;
-    // $scope.location.lat = leafEvent.latlng.lat;
-    // $scope.popMarker();
+    var leafEvent = a.leafletEvent;
+    // console.log(leafEvent.originalEvent.timeStamp);
+    // console.log(n);
+
     $scope.markersAdded = true;
 
     // Remove the existing movable markers
@@ -396,13 +407,13 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       var marker = $scope.markers[i];
 
       if (marker.lng == lng && marker.lat == lat)
-	     return true;
+       return true;
     }
     return false;
   };
 
   $scope.findOrgunitAndRelocate = function (unitId) {
-    console.log("Heklllo");
+
     $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
       var unit = data;
       var coords = $.parseJSON(unit.coordinates);
@@ -453,8 +464,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
-
-
   $scope.showError = function(error) {
     switch(error.code) {
     case error.PERMISSION_DENIED:
@@ -472,50 +481,41 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
-  $scope.getLocationLt = function (org) {
 
-    var coordinates = [];
-    var lat = 0;
-    coordinates = [];
 
-    console.log(org);
+  $scope.getLocation = function(org) {
+
+    var tmp;
 
     angular.forEach($scope.markers, function(item) {
 
       // if one of the organisations in the API equals the organisations markers´ id
       if (item.id === org.orgid) {
+        $scope.center = {
 
-	lat = item.lat;
+          lng: item.lng,
+          lat: item.lat,
+          zoom: 12,
+        }
+        tmp = item;
 
-      }
+        L.marker(L.latLng(item.lat, item.lng)).popupOpen();
 
-    });
-
-    return lat;
-  };
-
-  $scope.getLocationLg = function (org) {
-    var coordinates = [];
-    var lng = 0;
-    var orgdata;
-    coordinates = [];
-
-    angular.forEach($scope.markers, function(item) {
-
-      // if one of the organisations in the API equals the organisations markers´ id
-      if (item.id === org.orgid) {
-	orgdata = item;
-	lng = item.lng;
+        //tmp.openOn("#main-map");
+        //L.marker(item).bindPopup('Hello').openPopup();
+        //L.tmp.bindPopup("helooooooooooooo").openPopup();
+        var circle = L.circle([8, 14], 500, {
+	  color: 'red',
+	  fillColor: '#f03',
+	  fillOpacity: 0.5
+	}).addTo("#main-map");
 
       }
-
     });
-
-    return lng;
   };
 
   $scope.markerMessage = function(entry) {
-    // 	var groups = '';
+    //  var groups = '';
     // var dataSets = '<h5>Data sets</h5><ul>';
     // var programs = '<h5>Programs</h5><ul>';
     // for (var i = 0; i < $scope.orgunit.organisationUnitGroups.length; i++) {
@@ -540,32 +540,99 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     // var message = '<h4>' + entry.properties.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
     // $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
     // 	  dataSets + '<br>' + programs + '<br>' + actions;
+    //    dataSets + '<br>' + programs + '<br>' + actions;
     var actions = "";
     actions += '<button ng-click="selectEditOrg(\'' + entry.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
     return message;
   };
 
+  /* Leaflet code */
 
+  $scope.removeOsmLayer = function () {
+    delete this.layers.baselayers.osm;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.cycle = {
+      name: 'OpenCycleMap',
+      type: 'xyz',
+      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
+  };
 
+  $scope.addOsmLayer = function () {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.osm = {
+      name: 'OpenStreetMap',
+      type: 'xyz',
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
+  };
+
+  $scope.showGoogleLayers = function() {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.osm;
+    this.layers.baselayers = {
+      googleTerrain: {
+        name: 'Google Terrain',
+        layerType: 'TERRAIN',
+        type: 'google'
+      },
+      googleHybrid: {
+        name: 'Google Hybrid',
+        layerType: 'HYBRID',
+        type: 'google'
+      },
+      googleRoadmap: {
+        name: 'Google Streets',
+        layerType: 'ROADMAP',
+        type: 'google'
+      }
+    };
+  };
+
+  $scope.filterMarkers = function(org) {
+
+    $scope.removeMarkers();
+    $scope.markers.push({
+          lat: org.geometry.coordinates[1],
+          lng: org.geometry.coordinates[0],
+          type: 'marker',
+          id: entry.id,
+
+        message: $scope.markerMessage(entry),
+        getMessageScope: function () {
+      return $scope;
+      },
+    });
+  };
+
+  $scope.returnGeoFromId = function(org) {
+    angular.forEach($scope.markers, function(item) {
+      // if one of the organisations in the API equals the organisations markers´ id
+      if (item.id === org.orgid) {
+        return item;
+      }
+    });
+  };
 
   $scope.showMap = function(org) {
 
-    var coordinates = [];
-    var lat;
-    var lng;
-
-    lat = $scope.getLocationLt(org);
-    lng = $scope.getLocationLg(org); //= getLocationLg(org, $scope.markers);
-
-    $scope.center = {
-
-      lng: lng,
-      lat: lat,
-      zoom: 12,
-    };
-    $scope.findMarkerForUnit(org.orgid);
-
+    var coordinates = $scope.getLocation(org);
   };
 
   $scope.findMarkerForUnit = function (orgunitId) {
@@ -577,29 +644,67 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
+  /* Leaflet code */
+
+  $scope.removeOsmLayer = function () {
+    delete this.layers.baselayers.osm;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.cycle = {
+      name: 'OpenCycleMap',
+      type: 'xyz',
+      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
+  };
+
+  $scope.addOsmLayer = function () {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.googleTerrain;
+    delete this.layers.baselayers.googleRoadmap;
+    delete this.layers.baselayers.googleHybrid;
+    this.layers.baselayers.osm = {
+      name: 'OpenStreetMap',
+      type: 'xyz',
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      layerOptions: {
+        subdomains: ['a', 'b', 'c'],
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        continuousWorld: true
+      }
+    };
+  };
+
+  $scope.showGoogleLayers = function() {
+    delete this.layers.baselayers.cycle;
+    delete this.layers.baselayers.osm;
+    this.layers.baselayers = {
+      googleTerrain: {
+        name: 'Google Terrain',
+        layerType: 'TERRAIN',
+        type: 'google'
+      },
+      googleHybrid: {
+        name: 'Google Hybrid',
+        layerType: 'HYBRID',
+        type: 'google'
+      },
+      googleRoadmap: {
+        name: 'Google Streets',
+        layerType: 'ROADMAP',
+        type: 'google'
+      }
+    };
+  };
+
   angular.extend($scope, {
     layers: {
       baselayers: {
-        osm: {
-          name: 'OpenStreetMap',
-          type: 'xyz',
-          url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          layerOptions: {
-            subdomains: ['a', 'b', 'c'],
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            continuousWorld: true
-          }
-        },
-        cycle: {
-          name: 'OpenCycleMap',
-          type: 'xyz',
-          url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-          layerOptions: {
-            subdomains: ['a', 'b', 'c'],
-            attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            continuousWorld: true
-          }
-        },
         googleTerrain: {
           name: 'Google Terrain',
           layerType: 'TERRAIN',
@@ -614,7 +719,28 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
           name: 'Google Streets',
           layerType: 'ROADMAP',
           type: 'google'
-        }
+        },
+
+          osm: {
+            name: 'OpenStreetMap',
+            type: 'xyz',
+            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            layerOptions: {
+              subdomains: ['a', 'b', 'c'],
+              attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              continuousWorld: true
+            }
+          },
+          cycle: {
+            name: 'OpenCycleMap',
+            type: 'xyz',
+            url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+            layerOptions: {
+              subdomains: ['a', 'b', 'c'],
+              attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              continuousWorld: true
+            }
+          },
       }
     }
   });

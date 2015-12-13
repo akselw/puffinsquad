@@ -8,13 +8,9 @@ angular.module('myApp', [
   'myApp.directives',
   'myApp.controllers',
   'ngResource',
-  'leaflet-directive',
-  'basicAuthModule'
+  'leaflet-directive'
 ]).
 config(['$routeProvider', function($routeProvider , RestangularProvider) {
-  $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: 'MyCtrl1'});
-  $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: 'AuthController'});
-  $routeProvider.when('/view4', {templateUrl: 'partials/partial4.html', controller: 'MapController'});
-  $routeProvider.when('/view3', {templateUrl: 'partials/partial3.html', controller: 'MapController'});
-  $routeProvider.otherwise({redirectTo: '/view4'});
+  $routeProvider.when('/map', {templateUrl: 'partials/map.html', controller: 'MapController'});
+  $routeProvider.otherwise({redirectTo: '/map'});
 }]);

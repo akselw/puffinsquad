@@ -1,4 +1,3 @@
-
 <div class="form-group">
   
   <label class="control-label" for="name">Name:</label> 
@@ -11,20 +10,10 @@
     <input type="text" class="form-control" placeholder="Short name" ng-model="user.shortName"> 
   </div> 
 
- <label class="control-label" for="openingDate">Opening date:</label> 
+  <label class="control-label" for="openingDate">Opening date:</label> 
   <div class="form-group" id="openingDate"> 
     <input type="text" class="form-control" placeholder="Opening date" ng-model="user.openingDate"> 
   </div>
-
-  <label class="control-label" for="parent">Parent:</label> 
-  <div class="form-group" id="parent">
-    <input type="text" class="form-control" placeholder="Parent" ng-model="user.parent.name" disabled> 
-  </div> 
-  
-    <label class="control-label" for="">:</label> 
-  <div class="form-group" id=""> 
-    <input type="text" class="form-control" placeholder="" ng-model="user."> 
-  </div> 
 
   <label class="control-label" for="org-long">Longitude:</label> 
   <div class="form-group" id="org-long"> 
@@ -36,20 +25,13 @@
     <input type="number" class="form-control" placeholder="Latitude"  ng-model="user.coordinates[0]"> 
   </div>
 
-
   <div class="form-group">
-    <label for="sel1">Belongs to set:</label>
-    <select class="form-control" id="sel1">
-      <option >---------</option>
-      <option>Org unit set 1</option>
-      <option>Org unit set 2</option>
-      <option>Org unit set 3</option>
-      <option>Org unit set 4</option>
-      <option>Org unit set 5</option>
-      <option>Org unit set 6</option>
+    <label for="parents">Parent:</label>
+    <select class="form-control" id="parents"  ng-model="user.parent.code">
+      <option ng-repeat="parent in p = (parents | orderBy: 'name')" value="{{parent.code}}">{{parent.name}}</option>
     </select>
   </div>
   
   <button ng-click="cancelEdit()" type="submit" class="btn btn-secondary navbar-left">Cancel</button> 
-  <button ng-click="saveEditedOrgUnit(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
+  <button ng-click="saveOrgUnit(user)" type="submit" class="btn btn-primary navbar-right">Save</button>
 </div>
