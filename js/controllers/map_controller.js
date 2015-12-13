@@ -326,6 +326,26 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       lat: position.coords.latitude,
       zoom: 10,
     };
+    // marker.valueOf()._icon.style.backgroundColor = 'green';
+
+    angular.forEach($scope.markers, function(item) {
+
+      // if positions markeris already set, remove the old marker before setting a new one.
+      if (item.id === "currentpos") {
+         $scope.markers.pop(item);
+      }
+
+    });
+
+
+    $scope.markers.push({
+          lng: position.coords.longitude,
+          lat: position.coords.latitude,
+          type: 'marker',
+          id: 'currentpos',
+          message: 'Your are here!'
+        });
+
   };
 
   $scope.new_marker_msg = ' \
