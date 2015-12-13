@@ -9,7 +9,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
-
   /* Variable declarations */
   $scope.geojson = new Array();
   $scope.markers = new Array();
@@ -30,7 +29,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 		  savedtab: 'partials/saved.html'};
 
   $scope.organisationUnitLevels = new Array();
-
 
   $scope.location = {lng: -13.48297, lat: 8.36369};
 
@@ -66,8 +64,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
-
-
   $scope.init = function () {
     $scope.orgs = new Array();
     // Load and sort the organisation unit levels
@@ -98,7 +94,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.init();
-
 
   /*  GUI code  */
 
@@ -246,7 +241,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   /* Map code */
 
-
   $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
     console.log('Hello');
     $scope.geojson.style = {
@@ -281,7 +275,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       $scope.orgUnits[entry.properties.code] = entry;
     });
   });
-
 
   /*  Added and renewed service for getting organisation-data */
   OrgunitService.get(function (data) {
@@ -326,18 +319,15 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       lat: position.coords.latitude,
       zoom: 10,
     };
-    // marker.valueOf()._icon.style.backgroundColor = 'green';
 
     angular.forEach($scope.markers, function(item) {
 
       // if positions markeris already set, remove the old marker before setting a new one.
       if (item.id === "currentpos") {
          $scope.markers.pop(item);
-
       }
 
     });
-
 
     $scope.markers.push({
           lng: position.coords.longitude,
@@ -484,6 +474,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.showError = function(error) {
+    /*
+    // No need to alert the user about this. . .
+    window.alert("You denied permission to show your location!");
+    */
     switch(error.code) {
     case error.PERMISSION_DENIED:
       x.innerHTML = "User denied the request for Geolocation."
@@ -500,8 +494,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
-
-
   $scope.getLocation = function(org) {
 
     var tmp;
@@ -517,18 +509,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
           zoom: 12,
         }
         tmp = item;
-
-        //L.marker(L.latLng(item.lat, item.lng)).popupOpen();
-
-        //tmp.openOn("#main-map");
-        //L.marker(item).bindPopup('Hello').openPopup();
-        //L.tmp.bindPopup("helooooooooooooo").openPopup();
-      /* var circle = L.circle([8, 14], 500, {
-	     color: 'red',
-	     fillColor: '#f03',
-	     fillOpacity: 0.5
-	     }).addTo("#main-map"); 
-        */
       }
     });
   };
