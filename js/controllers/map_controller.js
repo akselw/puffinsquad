@@ -12,7 +12,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
-
   /* Variable declarations */
   $scope.geojson = new Array();
   $scope.markers = new Array();
@@ -39,7 +38,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.organisationUnitLevels = new Array();
-
 
   $scope.location = {lng: -13.48297, lat: 8.36369};
 
@@ -84,8 +82,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     $('#search').find('.ui.dimmer').removeClass('active');
   };
 
-
-
   $scope.init = function () {
     // Load and sort the organisation unit levels
     OrganisationUnitLevels.get(function (data) {
@@ -118,7 +114,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.init();
-
 
   /*  GUI code  */
 
@@ -264,8 +259,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
 
   /* Map code */
-
-
   OrgunitsGeoService.get({ level: 2 }, function (data) {
     $scope.geojson.data = data;
 
@@ -302,7 +295,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   });
 
-
   $scope.addMarkers = function () {
     $scope.markers.push({
       lat: $scope.location.lat,
@@ -326,6 +318,24 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       lat: position.coords.latitude,
       zoom: 10,
     };
+
+    angular.forEach($scope.markers, function(item) {
+
+      // if positions markeris already set, remove the old marker before setting a new one.
+      if (item.id === "currentpos") {
+         $scope.markers.pop(item);
+      }
+
+    });
+
+    $scope.markers.push({
+          lng: position.coords.longitude,
+          lat: position.coords.latitude,
+          type: 'marker',
+          id: 'currentpos',
+          message: 'Your are here!'
+        });
+
   };
 
   $scope.new_marker_msg = ' \
@@ -360,8 +370,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.$on('leafletDirectiveMap.click', function (e, a) {
 
     var leafEvent = a.leafletEvent;
-    // console.log(leafEvent.originalEvent.timeStamp);
-    // console.log(n);
 
     $scope.markersAdded = true;
 
@@ -465,6 +473,10 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   };
 
   $scope.showError = function(error) {
+    /*
+    // No need to alert the user about this. . .
+    window.alert("You denied permission to show your location!");
+    */
     switch(error.code) {
     case error.PERMISSION_DENIED:
       x.innerHTML = "User denied the request for Geolocation."
@@ -481,8 +493,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     }
   };
 
-
-
   $scope.getLocation = function(org) {
 
     var tmp;
@@ -498,49 +508,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
           zoom: 12,
         }
         tmp = item;
-
-        L.marker(L.latLng(item.lat, item.lng)).popupOpen();
-
-        //tmp.openOn("#main-map");
-        //L.marker(item).bindPopup('Hello').openPopup();
-        //L.tmp.bindPopup("helooooooooooooo").openPopup();
-        var circle = L.circle([8, 14], 500, {
-	  color: 'red',
-	  fillColor: '#f03',
-	  fillOpacity: 0.5
-	}).addTo("#main-map");
-
       }
     });
   };
 
   $scope.markerMessage = function(entry) {
-    //  var groups = '';
-    // var dataSets = '<h5>Data sets</h5><ul>';
-    // var programs = '<h5>Programs</h5><ul>';
-    // for (var i = 0; i < $scope.orgunit.organisationUnitGroups.length; i++) {
-    //   groups += $scope.orgunit.organisationUnitGroups[i].name;
-    //   if (i+1 < $scope.orgunit.organisationUnitGroups.length) {
-    //     groups += ', ';
-    //   }
-    // }
-    // for (var i = 0; i < $scope.orgunit.dataSets.length; i++) {
-    //   dataSets += '<li>' + $scope.orgunit.dataSets[i].name + '</li>';
-    // }
-    // for (var i = 0; i < $scope.orgunit.programs.length; i++) {
-    //   programs += '<li>' + $scope.orgunit.programs[i].name + '</li>';
-    // }
-    // dataSets += '</ul>';
-    // programs += '</ul>';
-    // var actions = '';
-    // if ($scope.orgunit.access.update)
-    // actions += '<button ng-click="selectEditOrg()" type="submit" class="btn btn-block btn-default">Edit</button>';
-    // if ($scope.orgunit.access.delete)
-    // actions += '<button type="button" class="btn btn-block btn-danger">Delete</button>';
-    // var message = '<h4>' + entry.properties.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
-    // $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
-    // 	  dataSets + '<br>' + programs + '<br>' + actions;
-    //    dataSets + '<br>' + programs + '<br>' + actions;
+
     var actions = "";
     actions += '<button ng-click="selectEditOrg(\'' + entry.id +'\')" type="submit" class="btn btn-block btn-default">Edit</button>';
     var message = '<h4>' + entry.properties.name + '</h4>'  + '<br>' + actions;
