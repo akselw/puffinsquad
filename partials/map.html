@@ -1,0 +1,24 @@
+<div class="col-sm-8">
+  <div class="panel panel-default">
+    <div class="panel-heading">Org units
+      <button ng-click="showOnMap()" type="button" class="btn btn-default btn-xs pull-right">
+	       <i class="fa fa-location-arrow"> Find me</i>
+      </button>
+    </div>
+    <div class="panel-body" style="padding: 0;">
+	     <leaflet defaults="defaults" center="center" geojson="geojson" markers="markers" layers="layers" height="480px" max-width="698px"></leaflet>
+    </div>
+
+  </div>
+</div>
+<div class="col-sm-4">
+  <div class="panel panel-default"  style="min-height: 693px; border: 0;">
+    <ul class="nav nav-tabs nav-justified">
+      <li role="presentation" class="active" id="search-tab"><a ng-click="selectSearch()">Search</a></li>
+      <li role="presentation" id="new-tab"><a id="new-tab-link" ng-click="selectNewOrg()">New</a></li>
+    </ul>
+    <div class="panel-body" id="panel-body" style="min-height: 651px;">
+      <ng-include src="pages[subPage]"></ng-include>
+    </div>
+  </div>
+</div>

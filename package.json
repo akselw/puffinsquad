@@ -1,0 +1,15 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "local-web-server": {
+    "port": 8100
+  },
+  "scripts": {
+    "start": "ws"
+  },
+  "dependencies": {
+    "angular-cookies": "^1.4.8",
+    "angular-oauth2": "^3.0.1",
+    "query-string": "^3.0.0"
+  }
+}
