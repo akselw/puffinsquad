@@ -60,11 +60,9 @@ myAppServices.factory("OrgunitParentService", function ($resource, $http) {
 
 myAppServices.factory("OrgunitService", function ($resource, $http) {
   var unitId = '';
-  var level = 1;
   return $resource(
-    dhisAPI + 'api/organisationUnits.json?level=:level', //?paging=false', // organisationUnits.json?paging=false
+    dhisAPI + 'api/organisationUnits.json', //?paging=false', // organisationUnits.json?paging=false
     {
-      level: level
     },
     {
 

@@ -5,7 +5,10 @@ myApp.config(function($logProvider){
   $logProvider.debugEnabled(false);
 });
 
-myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout', 'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', 'OrgunitParentService', function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService, OrganisationUnitLevels, OrgunitService, OrgunitParentService) {
+myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$timeout',
+  'OrgunitsGeoService', 'OrganisationUnitLevels', 'OrgunitService', 'OrgunitParentService',
+  function ($scope, $http, $compile, $filter, $timeout, OrgunitsGeoService,
+      OrganisationUnitLevels, OrgunitService, OrgunitParentService) {
   // Setting headers
   $http.defaults.headers.common['Authorization'] = 'Basic YWRtaW46ZGlzdHJpY3Q=';
 
@@ -14,7 +17,11 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.geojson = new Array();
   $scope.markers = new Array();
   $scope.orgUnits = new Array();
+
+
   $scope.orgs = new Array(); // using orgs to fetch more information than just geodata.
+  $scope.orgsByLevel = new Array();
+
   $scope.parents = new Array();
 
   $scope.orgUnitsJSON = new Array();
@@ -24,10 +31,12 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.subPage='searchtab';
   $scope.edited = null;
 
-  $scope.pages = {searchtab: 'partials/search-tab.html',
-		  neworgtab: 'partials/new-org-tab.html',
-		  editorgtab: 'partials/edit-org-tab.html',
-		  savedtab: 'partials/saved.html'};
+  $scope.pages = {
+    searchtab: 'partials/search-tab.html',
+    neworgtab: 'partials/new-org-tab.html',
+	  editorgtab: 'partials/edit-org-tab.html',
+		savedtab: 'partials/saved.html'
+  };
 
   $scope.organisationUnitLevels = new Array();
 
@@ -49,6 +58,14 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.setLevel = function (level) {
     $scope.level = level;
+    $scope.orgsByLevel = new Array();
+
+    $scope.orgs.forEach(function (entry) {
+      if (entry.level === level) {
+        $scope.orgsByLevel.push(entry);
+        console.log(entry);
+      }
+    });
   }
 
   $scope.setOrgs = function (level) {
@@ -56,24 +73,26 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
     OrgunitService.get({ level: level }, function (data) {
       data.organisationUnits.forEach(function (entry) {
+        console.log(entry);
         $scope.orgs.push({
           orgname: entry.name,
           orgid: entry.id,
           level: level
         });
       });
-      $('#search').find('.ui.dimmer').removeClass('active');
     });
+    $('#search').find('.ui.dimmer').removeClass('active');
   };
 
 
 
   $scope.init = function () {
-    $scope.orgs = new Array();
     // Load and sort the organisation unit levels
     OrganisationUnitLevels.get(function (data) {
+      //$('#search').find('.ui.dimmer').addClass('active');
       data.organisationUnitLevels.forEach(function (entry) {
         OrganisationUnitLevels.get({ id: entry.id}, function (level) {
+          $scope.setOrgs(level.level);
 
           $scope.organisationUnitLevels.push({
             id: level.id,
@@ -91,6 +110,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
           });
           $('.ui.dropdown').dropdown();
         });
+        // $('#search').find('.ui.dimmer').removeClass('active');
       });
     }, function (error) {
       console.log(error);
@@ -229,9 +249,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   OrgunitParentService.get(function (data) {
     $scope.parents = data.organisationUnits;
-    console.log(data);
-    console.log($scope.parents);
-
   });
 
   $scope.markerMessageJSON = function(orgUnit) {
@@ -247,8 +264,9 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   /* Map code */
 
 
-  $scope.geojson.data = OrgunitsGeoService.get({ level: 2 }, function (data) {
-    console.log('Hello');
+  OrgunitsGeoService.get({ level: 2 }, function (data) {
+    $scope.geojson.data = data;
+
     $scope.geojson.style = {
       fillColor: 'green',
       weight: 2,
@@ -283,24 +301,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   });
 
 
-  /*  Added and renewed service for getting organisation-data */
-  OrgunitService.get(function (data) {
-    console.log(name);
-    var test = "";
-    var orgsdata = data.organisationUnits;
-
-    orgsdata.forEach(function (entry) {
-      var name = entry.name;
-      var id = entry.id;
-
-      $scope.orgs.push({
-        orgname: name,
-        orgid: id,
-
-      });
-    });
-  });
-
   $scope.addMarkers = function () {
     $scope.markers.push({
       lat: $scope.location.lat,
@@ -310,9 +310,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
-  $scope.showOnMap = function () {
-    console.log("Finding current position with GeoLocation . . . ");
-
+  $scope.findMe = function () {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition($scope.showPosition, $scope.showError);
     } else {

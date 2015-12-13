@@ -8,7 +8,7 @@
       <i class="dropdown icon"></i>
       <div class="default text">Choose a level</div>
       <div class="menu">
-        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setOrgs({{ level.level }})">{{ level.name }}</div>
+        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</div>
       </div>
     </div>
   </div>
@@ -17,9 +17,20 @@
   </div>
   <span ng-show="searchText.length > 0">
     <div class="list-group" id="searchTextResults">
-      <a class="list-group-item"  ng-repeat="organization in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)" ng-click="showMap(organization)">{{ organization.orgname }}</a>
-      <span ng-show="(orgs | filter:searchText | orderBy: 'name').length - 9 > 0">
-        <li class="list-group-item" style="font-weight: bold; border-top-left-radius: 0; border-top-right-radius: 0;">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+      <a class="list-group-item" ng-show="level > 0" ng-repeat="organization in filtered = (orgsByLevel | filter:searchText | orderBy: 'name' | limitTo: 9)" ng-click="showMap(organization)">{{ organization.orgname }}</a>
+      <a class="list-group-item" ng-hide="level > 0" ng-repeat="organization in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)" ng-click="showMap(organization)">{{ organization.orgname }}</a>
+      <span ng-show="level > 0">
+        <span ng-show="((orgsByLevel | filter:searchText | orderBy: 'name').length - 9) > 0">
+          <li class="list-group-item" style="font-weight: bold; border-top-left-radius: 0; border-top-right-radius: 0;">{{(orgsByLevel | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+        </span>
+      </span>
+      <span ng-hide="level > 0">
+        <span ng-show="((orgs | filter:searchText | orderBy: 'name').length - 9) > 0">
+          <li class="list-group-item" style="font-weight: bold; border-top-left-radius: 0; border-top-right-radius: 0;">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+        </span>
+      </span>
+      <span ng-hide="(orgs | filter:searchText | orderBy: 'name').length > 0" ng-show="(orgsByLevel | filter:searchText | orderBy: 'name').length == 0">
+        <p class="text-center"><b>No result for '{{ searchText }}'<b><p>
       </span>
     </div>
   </span>
