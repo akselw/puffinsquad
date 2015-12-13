@@ -1,30 +1,28 @@
 <!-- <div ng-controller="SearchController"> -->
-<div class="ui selection dropdown fluid">
-  <input type="hidden" name="organisation_unit_level">
-  <i class="dropdown icon"></i>
-  <div class="default text"></div>
-  <div class="menu">
-    <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}">{{ level.name }}</div>
+<div id="search" class="ui form equal width">
+  <div class="ui inverted dimmer">
+    <div class="ui text loader" id="loader-text">Loading data...</div>
   </div>
-</div>
-<label class="control-label" for="search">Search:</label>
-<div class="form-group" id="search">
-<input type="string" ng-model="searchText" class="form-control" placeholder="Search for facility" autofocus>
-
-
-<span ng-show="searchText.length > 0">
-
-  <ul class="list-group" id="searchTextResults">
-    <li class="list-group-item"  ng-repeat="organization in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)">
-<a ng-click="showMap(organization)" style="display:block; min-height:100%;">{{ organization.orgname }}</a>
-    </li>
-
-    <span ng-show="(orgs | filter:searchText | orderBy: 'name').length - 9 > 0">
-<li class="list-group-item">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
-
- </span>
-
-  </ul>
-</span>
+  <div class="field">
+    <div class="ui selection dropdown fluid">
+      <input type="hidden" name="organisation_unit_level">
+      <i class="dropdown icon"></i>
+      <div class="default text">Choose a level</div>
+      <div class="menu">
+        <div class="item" ng-repeat="level in organisationUnitLevels" data-value="{{ level.id }}" ng-click="setLevel({{ level.level }})">{{ level.name }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <input type="search" ng-model="searchText" placeholder="Search for facility" autofocus>
+  </div>
+  <span ng-show="searchText.length > 0">
+    <div class="list-group" id="searchTextResults">
+      <a class="list-group-item"  ng-repeat="organization in filtered = (orgs | filter:searchText | orderBy: 'name' |limitTo:9)" ng-click="showMap(organization)">{{ organization.orgname }}</a>
+      <span ng-show="(orgs | filter:searchText | orderBy: 'name').length - 9 > 0">
+        <li class="list-group-item" style="font-weight: bold; border-top-left-radius: 0; border-top-right-radius: 0;">{{(orgs | filter:searchText | orderBy: 'name').length - 9}} more results not displayed</li>
+      </span>
+    </div>
+  </span>
 </div> <!-- form-group -->
 <!-- </div> -->

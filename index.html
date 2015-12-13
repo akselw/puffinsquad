@@ -31,22 +31,9 @@
         </button>
         <a class="navbar-brand" href="/">DHIS2 app</a>
       </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="#/view3">A map</a></li>
-          <li><a href="#/view4">Search organization units</a></li>
-        </ul>
-      </div>
     </div>
   </div>
   <div class="container" ng-view></div>
-
-
-  <div class="container" ng-model="organisationUnitLevels" ng-repeat="level in organisationUnitLevels">
-    <p>{{ level.name }}</p>
-  </div>
-  <div class="container">This app is based on the Angular Seed project and uses AngularJS. </div>
-  <div class="container">Click on "Search organization units to find an organization.</div>
 
   <!-- In production use:
        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>

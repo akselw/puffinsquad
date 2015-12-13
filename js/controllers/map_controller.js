@@ -43,34 +43,60 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     zoom: 4
   };
 
+  $scope.level = 0;
 
+  $scope.setLevel = function (level) {
+    $scope.level = level;
+  }
 
-  // Load and sort the organisation unit levels
-  OrganisationUnitLevels.get(function (data) {
-    data.organisationUnitLevels.forEach(function (entry) {
-      OrganisationUnitLevels.get({ id: entry.id}, function (level) {
-        $scope.organisationUnitLevels.push({
-          id: level.id,
-          name: level.displayName,
-          level: level.level
+  $scope.setOrgs = function (level) {
+    $('#search').find('.ui.dimmer').addClass('active');
+
+    OrgunitService.get({ level: level }, function (data) {
+      data.organisationUnits.forEach(function (entry) {
+        $scope.orgs.push({
+          orgname: entry.name,
+          orgid: entry.id,
+          level: level
         });
-
-        $scope.organisationUnitLevels.sort(function (a, b) {
-          if (a.level < b.level)
-            return -1;
-          if (a.level > b.level)
-            return 1;
-          else
-            return 0;
-        });
-        console.log(level);
       });
+      $('#search').find('.ui.dimmer').removeClass('active');
     });
+  };
 
-      $('.ui.dropdown').dropdown();
-  }, function (error) {
-    console.log(error);
-  });
+
+
+  $scope.init = function () {
+    $scope.orgs = new Array();
+    // Load and sort the organisation unit levels
+    OrganisationUnitLevels.get(function (data) {
+      data.organisationUnitLevels.forEach(function (entry) {
+        OrganisationUnitLevels.get({ id: entry.id}, function (level) {
+          $scope.setOrgs(level.level);
+
+          $scope.organisationUnitLevels.push({
+            id: level.id,
+            name: level.displayName,
+            level: level.level
+          });
+
+          $scope.organisationUnitLevels.sort(function (a, b) {
+            if (a.level < b.level)
+              return -1;
+            if (a.level > b.level)
+              return 1;
+            else
+              return 0;
+          });
+          $('.ui.dropdown').dropdown();
+        });
+      });
+    }, function (error) {
+      console.log(error);
+    });
+  };
+
+  $scope.init();
 
 
 
@@ -523,65 +549,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
 
 
-
-  /* Leaflet code */
-
-  $scope.removeOsmLayer = function () {
-    delete this.layers.baselayers.osm;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.cycle = {
-      name: 'OpenCycleMap',
-      type: 'xyz',
-      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.addOsmLayer = function () {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.osm = {
-      name: 'OpenStreetMap',
-      type: 'xyz',
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.showGoogleLayers = function() {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.osm;
-    this.layers.baselayers = {
-      googleTerrain: {
-        name: 'Google Terrain',
-        layerType: 'TERRAIN',
-        type: 'google'
-      },
-      googleHybrid: {
-        name: 'Google Hybrid',
-        layerType: 'HYBRID',
-        type: 'google'
-      },
-      googleRoadmap: {
-        name: 'Google Streets',
-        layerType: 'ROADMAP',
-        type: 'google'
-      }
-    };
-  };
-
   $scope.showMap = function(org) {
 
     var coordinates = [];
@@ -607,8 +574,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
         console.log("Found it!");
         console.log(entry);
       }
-    })
-  }
+    });
+  };
 
   angular.extend($scope, {
     layers: {
