@@ -33,8 +33,8 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
   $scope.pages = {
     searchtab: 'partials/search-tab.html',
     neworgtab: 'partials/new-org-tab.html',
-	  editorgtab: 'partials/edit-org-tab.html',
-		savedtab: 'partials/saved.html'
+    editorgtab: 'partials/edit-org-tab.html',
+    savedtab: 'partials/saved.html'
   };
 
   $scope.organisationUnitLevels = new Array();
@@ -390,7 +390,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     angular.extend($scope, {
       markers: t
     });
-  }
+  };
 
   $scope.$on('leafletDirectiveMarker.dragend', function (e, a) {
     $scope.location.lat = a.leafletEvent.target._latlng.lat;
@@ -399,7 +399,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
 
   $scope.removeMarkers = function () {
     $scope.markers = new Array();
-  }
+  };
 
   $scope.markerExistsAtPoint = function (lat, lng) {
     for (var i = 0; i < $scope.markers.length; i++) {
