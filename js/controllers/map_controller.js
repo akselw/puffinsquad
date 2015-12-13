@@ -547,63 +547,7 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     return message;
   };
 
-  /* Leaflet code */
 
-  $scope.removeOsmLayer = function () {
-    delete this.layers.baselayers.osm;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.cycle = {
-      name: 'OpenCycleMap',
-      type: 'xyz',
-      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.addOsmLayer = function () {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.osm = {
-      name: 'OpenStreetMap',
-      type: 'xyz',
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.showGoogleLayers = function() {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.osm;
-    this.layers.baselayers = {
-      googleTerrain: {
-        name: 'Google Terrain',
-        layerType: 'TERRAIN',
-        type: 'google'
-      },
-      googleHybrid: {
-        name: 'Google Hybrid',
-        layerType: 'HYBRID',
-        type: 'google'
-      },
-      googleRoadmap: {
-        name: 'Google Streets',
-        layerType: 'ROADMAP',
-        type: 'google'
-      }
-    };
-  };
 
   $scope.filterMarkers = function(org) {
 
@@ -644,63 +588,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     });
   };
 
-  /* Leaflet code */
-
-  $scope.removeOsmLayer = function () {
-    delete this.layers.baselayers.osm;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.cycle = {
-      name: 'OpenCycleMap',
-      type: 'xyz',
-      url: 'http://{s}.title.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.addOsmLayer = function () {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.googleTerrain;
-    delete this.layers.baselayers.googleRoadmap;
-    delete this.layers.baselayers.googleHybrid;
-    this.layers.baselayers.osm = {
-      name: 'OpenStreetMap',
-      type: 'xyz',
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      layerOptions: {
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        continuousWorld: true
-      }
-    };
-  };
-
-  $scope.showGoogleLayers = function() {
-    delete this.layers.baselayers.cycle;
-    delete this.layers.baselayers.osm;
-    this.layers.baselayers = {
-      googleTerrain: {
-        name: 'Google Terrain',
-        layerType: 'TERRAIN',
-        type: 'google'
-      },
-      googleHybrid: {
-        name: 'Google Hybrid',
-        layerType: 'HYBRID',
-        type: 'google'
-      },
-      googleRoadmap: {
-        name: 'Google Streets',
-        layerType: 'ROADMAP',
-        type: 'google'
-      }
-    };
-  };
 
   angular.extend($scope, {
     layers: {
