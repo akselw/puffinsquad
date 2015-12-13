@@ -317,7 +317,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
       if (item.id === "currentpos") {
          $scope.markers.pop(item);
       }
-
     });
 
     $scope.markers.push({
@@ -412,57 +411,6 @@ myApp.controller('MapController', ['$scope', '$http', '$compile', '$filter', '$t
     return false;
   };
 
-  $scope.findOrgunitAndRelocate = function (unitId) {
-
-    $http.get('js/json/orgunits/' + unitId + '.json').success(function (data) {
-      var unit = data;
-      var coords = $.parseJSON(unit.coordinates);
-
-      console.log(unit.id);
-
-      if (unit.featureType === 'MULTI_POLYGON' || unit.featureType === 'POLYGON') {
-        $scope.geojson = {
-          data: {
-            "type": "FeatureCollection",
-            "features": [
-              {
-                "type": "Feature",
-                "properties": {},
-                "geometry": {
-                  "type": unit.featureType === 'POLYGON' ? 'Polygon' : "MultiPolygon",
-                  "coordinates": coords
-                }
-              }
-            ]
-          },
-          style: {
-            fillColor: 'green',
-            weight: 2,
-            opacity: 1,
-            color: 'white',
-            dashArray: 3,
-            fillOpacity: 0.8
-          }
-        };
-      } else if (unit.featureType === 'POINT') {
-        if (!$scope.markerExistsAtPoint(coords[0], coords[1])) {
-          $scope.markers.push({
-            lng: coords[0],
-            lat: coords[1],
-            type: 'marker',
-            message: '<h4>' + $scope.orgunit.name + '</h4><dl class="dl-horizontal"><dt style="width: auto;">Opened:</dt><dd style="margin-left: 60px;">' +
-              $scope.orgunit.openingDate + '</dd><dt style="width: auto;">Groups:</dt><dd style="margin-left: 60px;">' + groups + '</dd></dl><br>' +
-              dataSets + '<br>' + programs + '<br>' + actions
-          });
-        }
-        $scope.center = {
-          lng: coords[0],
-          lat: coords[1],
-          zoom: 10
-        };
-      }
-    });
-  };
 
   $scope.showError = function(error) {
     /*
