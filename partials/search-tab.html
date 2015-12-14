@@ -9,7 +9,7 @@
     </select>
   </div>
   <div class="field">
-    <input type="search" ng-model="searchText" placeholder="Search for facility" autofocus>
+    <input type="search" ng-model="searchText" placeholder="Search for facility" autofocus autocomplete="off" spellcheck="false">
   </div>
   <span ng-show="searchText.length > 0">
     <div class="list-group" id="searchTextResults">
